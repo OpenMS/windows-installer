@@ -141,7 +141,7 @@ Section -license SEC0008
     File "${OPENMSDIR}\License.libSVM.txt"
     File "${OPENMSDIR}\License.NetCDF.txt"
     
-    File "${OPENMSDIR}\source\config\tools\installer\ReleaseNotes.txt"
+    File "ReleaseNotes.txt"
 SectionEnd
 
 
