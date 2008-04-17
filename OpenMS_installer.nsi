@@ -158,7 +158,7 @@ Section "OpenMS Library" SEC_Lib
     #this should be obsolete: !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
     
     !insertmacro InstallFile "${OPENMSDIR}\lib\libOpenMS.dll"
-    RegDLL "${INSTDIR}\bin\libOpenMS.dll"
+    RegDLL "$INSTDIR\bin\libOpenMS.dll"
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
