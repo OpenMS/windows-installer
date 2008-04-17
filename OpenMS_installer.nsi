@@ -3,6 +3,9 @@ Name "OpenMS"
 
 ### edit this to suit your system
 
+# set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
+!define DEBUG_BUILD 0
+
 # path to QT libs
 !define QTLIBDIR "C:\Qt\4.3.4\bin"
 # path to contrib
@@ -34,6 +37,27 @@ Name "OpenMS"
 #!define COMPANY "Free University of Berlin"
 !define URL http://www.open-ms.de
 
+# Included files
+!include Sections.nsh
+!include MUI.nsh
+!include Library.nsh
+!include FileFunc.nsh
+!define ALL_USERS
+!include IncludeScript_Misc.nsh
+!include IncludeScript_FileLogging.nsh
+
+# Reserved Files
+!insertmacro MUI_RESERVEFILE_LANGDLL
+ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
+
+!insertmacro RefreshShellIcons
+!insertmacro un.RefreshShellIcons
+!insertmacro DirState
+!insertmacro GetFileName
+
+# Variables
+Var StartMenuGroup
+
 # MUI defines
 !define MUI_ICON OpenMS.ico
 !define MUI_FINISHPAGE_NOAUTOCLOSE
@@ -48,25 +72,11 @@ Name "OpenMS"
 !define MUI_LANGDLL_REGISTRY_KEY ${REGKEY}
 !define MUI_LANGDLL_REGISTRY_VALUENAME InstallerLanguage
 
-# Included files
-!include Sections.nsh
-!include MUI.nsh
-!include Library.nsh
-#!include FileFuncs.nsh
-!define ALL_USERS
-!include IncludeScript_Misc.nsh
-
-# Reserved Files
-!insertmacro MUI_RESERVEFILE_LANGDLL
-ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
-
-# Variables
-Var StartMenuGroup
-
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE ${OPENMSDIR}\License.txt
 !insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -77,6 +87,11 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE German
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE French
+
+# predefined installation modes
+InstType "Recommended"  #1
+InstType "Minimum"      #2
+InstType "Full"         #3
 
 # Installer attributes
 OutFile OpenMS-${VERSION}_setup.exe
@@ -96,7 +111,7 @@ InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails hide
 
 
-Section TESTING
+Section "-hidden TESTING"
 System::Alloc 32
 Pop $1
 System::Call "Kernel32::GlobalMemoryStatus(i) v (r1)"
@@ -116,103 +131,161 @@ DetailPrint "Free virtual: $9 Bytes"
 
 SectionEnd
 
-!macro FOLDER_LIST_RECURSIVE INCLUDE_DIR EXCLUDE_FILES 
-  !system "FolderList.exe /r $\"${INCLUDE_DIR} $\" $\"${EXCLUDE_FILES}$\"" 
-  !include "FolderList.exe.txt" 
-!macroend
-
-# Installer sections
-Section -lib SEC0000
-
-# we need to install add dll큦 together with the binaries 
-# to ensure the dynamic linking uses the correct dll큦
-# (putting dll큦 in another path makes it prone to 
-# invalid PATH settings)
-    SetOutPath $INSTDIR\bin
-    SetOverwrite on
-    File "${CONTRIBDIR}\lib\libxerces-c2_7_0.dll"
-    
-    # Installing library ..\OpenMS\lib\libOpenMS.dll
-    # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
-    !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
-    
-    File "${QTLIBDIR}\QtCore4.dll"
-    File "${QTLIBDIR}\QtGui4.dll"
-    File "${QTLIBDIR}\QtNetwork4.dll"
-    File "${QTLIBDIR}\QtOpenGL4.dll"
-    File "${QTLIBDIR}\QtSql4.dll"
-    File "${QTLIBDIR}\mingwm10.dll"
-
-   
-    SetOutPath $INSTDIR\share
-    SetOverwrite on
-    !insertmacro FOLDER_LIST_RECURSIVE "${OPENMSDIR}\share\*.*" ".svn\"
-    
-    # icon for files associated with TOPPView
-    File "OpenMS.ico"
-SectionEnd
-
-Section -doc SEC0007
-    SetOutPath $INSTDIR\doc
-    SetOverwrite on
-    !insertmacro FOLDER_LIST_RECURSIVE "${OPENMSDIR}\doc\html\*.*" ".svn\"
-SectionEnd
-
-Section -license SEC0008
-    SetOutPath $INSTDIR
-    SetOverwrite on
-    File "${OPENMSDIR}\License.gpl-2.0.txt"
-    File "${OPENMSDIR}\License.lgpl-2.1.txt"
-    File "${OPENMSDIR}\License.libSVM.txt"
-    File "${OPENMSDIR}\License.NetCDF.txt"
-    
-    File "ReleaseNotes.txt"
-SectionEnd
-
 !macro CREATE_SMGROUP_SHORTCUT NAME PATH
     Push "${NAME}"
     Push "${PATH}"
     Call CreateSMGroupShortcut
 !macroend
 
-Section -TOPP SEC0001
+# Installer sections
+Section "OpenMS Library" SEC_Lib
+    SectionIn 1 2 3 RO
+# we need to install add dll큦 together with the binaries 
+# to ensure the dynamic linking uses the correct dll큦
+# (putting dll큦 in another path makes it prone to 
+# invalid PATH settings)
     SetOutPath $INSTDIR\bin
     SetOverwrite on
-    File /r ${OPENMSDIR}\bin\*.exe
+
+    #open log file    
+    !insertmacro OpenUninstallLog
+
+    # install file (with logging)
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libxerces-c2_7_0.dll"
+    
+    # Installing library ..\OpenMS\lib\libOpenMS.dll
+    # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
+    #this should be obsolete: !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
+    
+    !insertmacro InstallFile "${OPENMSDIR}\lib\libOpenMS.dll"
+    RegDLL "${INSTDIR}\bin\libOpenMS.dll"
+    
+    !if ${DEBUG_BUILD} == 0 
+        !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\QtGui4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\QtNetwork4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\QtOpenGL4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\QtSql4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\mingwm10.dll"
+    !endif
+
+    SetOutPath $INSTDIR\share
+    SetOverwrite on
+    !if ${DEBUG_BUILD} == 0 
+        !insertmacro InstallFolder "${OPENMSDIR}\share\*.*" ".svn\"
+    !endif
+    
+    # icon for files associated with TOPPView
+    !insertmacro InstallFile "OpenMS.ico"
+    
+    !insertmacro CloseUninstallLog
+SectionEnd
+
+Section "TOPP tools" SEC_TOPP
+    SectionIn 1 2 3 RO
+    #open log file    
+    !insertmacro OpenUninstallLog
+
+    SetOutPath $INSTDIR\bin
+    SetOverwrite on
+    
+    !if ${DEBUG_BUILD} == 0
+        !insertmacro InstallFile ${OPENMSDIR}\bin\*.exe
+    !endif
 
     !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
     !insertmacro CREATE_SMGROUP_SHORTCUT INIFileEditor $INSTDIR\bin\INIFileEditor.exe
     !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.open-ms.de/
     !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation" $INSTDIR\doc\index.html
     !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP command line" "$INSTDIR\bin\command.bat"
+
+    !insertmacro CloseUninstallLog
 SectionEnd
 
-Section create_command_bat
+Section "Documentation" SEC_Doc
+    SectionIn 1 3
+    #open log file    
+    !insertmacro OpenUninstallLog
+
+    SetOutPath $INSTDIR\doc
+    SetOverwrite on
+    
+    !if ${DEBUG_BUILD} == 0
+        !insertmacro InstallFolder "${OPENMSDIR}\doc\html\*.*" ".svn\"
+    !endif    
+
+    !insertmacro CloseUninstallLog
+SectionEnd
+
+Section "-License" SEC_License
+    SectionIn 1 2 3
+    #open log file    
+    !insertmacro OpenUninstallLog
+
+    SetOutPath $INSTDIR
+    SetOverwrite on
+
+    !insertmacro InstallFile  "${OPENMSDIR}\License.gpl-2.0.txt"
+    !insertmacro InstallFile  "${OPENMSDIR}\License.lgpl-2.1.txt"
+    !insertmacro InstallFile  "${OPENMSDIR}\License.libSVM.txt"
+    !insertmacro InstallFile  "${OPENMSDIR}\License.NetCDF.txt"
+    !insertmacro InstallFile  "ReleaseNotes.txt"
+
+    !insertmacro CloseUninstallLog
+SectionEnd
+
+Section "-Create_command_bat" SEC_CmdBat
+    SectionIn 1 2 3
+    #open log file    
+    !insertmacro OpenUninstallLog
+        
+    ## create a command bat
+    push $R0
+    push $0
     StrCpy $R0 $INSTDIR 2
     fileOpen $0 "$INSTDIR\bin\command.bat" w
     fileWrite $0 "$SYSDIR\cmd.exe /k $\"$R0 && cd $INSTDIR\bin && cls && echo on && echo Welcome to the OpenMS TOPP tools command line && echo type 'dir *.exe' to see available commands && echo on $\""
     fileClose $0
+    pop $0
+    pop $R0
+
+    FileWrite $UninstallLog "$INSTDIR\bin\command.bat$\r$\n"
+
+    !insertmacro CloseUninstallLog
 SectionEnd
 
 
-Section PathInst
-  Push "$INSTDIR\bin"
-  Call AddToPath
+Section "-PathInst" SEC_PathRegister
+    SectionIn 1 2 3
+    # no logging required, as we do not install files in this section
+    
+    Push "$INSTDIR\bin"
+    Call AddToPath
 
-  #add OpenMS data path (for shared xml files etc)
-  Push "OPENMS_DATA_PATH"
-  Push "$INSTDIR\share\OpenMS"
-  Call AddToEnvVar
+    #create OpenMS data path (for shared xml files etc)
+    Push "OPENMS_DATA_PATH"
+    Push "$INSTDIR\share\OpenMS"
+    Call WriteEnvStr
+
 SectionEnd
 
-Section FileExtensionRegistration
-  # windows registry info: http://support.microsoft.com/kb/256986
-  !insertmacro OpenMSTOPPViewExtensions RegisterExtensionSection
-  call RefreshShellIcons
-SectionEnd
+SectionGroup "Register File Extensions" SEC_RegisterExt
+    # no logging required, as we do not install files in this section
 
-Section -post SEC0003
+
+    # windows registry info: http://support.microsoft.com/kb/256986
+    !insertmacro OpenMSTOPPViewExtensions RegisterExtensionSection
+    
+    Section "-RegFileRefreshInternal" SEC_RegFileRefreshInternal
+        SectionIn 1 2 3
+        ${RefreshShellIcons}
+    SectionEnd
+        
+SectionGroupEnd
+
+Section -post SEC0008
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
+    WriteRegStr HKLM "${REGKEY}" "UninstallString" "$INSTDIR\uninstall.exe"
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -229,108 +302,129 @@ Section -post SEC0003
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 SectionEnd
 
-# Macro for selecting uninstaller sections
-!macro SELECT_UNSECTION SECTION_NAME UNSECTION_ID
-    Push $R0
-    ReadRegStr $R0 HKLM "${REGKEY}\Components" "${SECTION_NAME}"
-    StrCmp $R0 1 0 next${UNSECTION_ID}
-    !insertmacro SelectSection "${UNSECTION_ID}"
-    GoTo done${UNSECTION_ID}
-next${UNSECTION_ID}:
-    !insertmacro UnselectSection "${UNSECTION_ID}"
-done${UNSECTION_ID}:
-    Pop $R0
-!macroend
-
-# Uninstaller sections
-!macro DELETE_SMGROUP_SHORTCUT NAME
-    Push "${NAME}"
-    Call un.DeleteSMGroupShortcut
-!macroend
-
-Section /o -un.TOPP UNSEC0001
-    !insertmacro DELETE_SMGROUP_SHORTCUT "TOPP command line"
-    !insertmacro DELETE_SMGROUP_SHORTCUT "OpenMS Homepage"
-    !insertmacro DELETE_SMGROUP_SHORTCUT "OpenMS Documentation"
-    !insertmacro DELETE_SMGROUP_SHORTCUT INIFileEditor
-    !insertmacro DELETE_SMGROUP_SHORTCUT TOPPView
-   
-    RmDir /r /REBOOTOK $INSTDIR\bin\*.exe
-SectionEnd
-
-Section /o -un.PathInst UNSEC0010
-  Push "$INSTDIR\bin"
-  Call un.RemoveFromPath
-
-  Push "OPENMS_DATA_PATH"
-  Push "$INSTDIR\share\OpenMS"
-  Call un.RemoveFromEnvVar
-SectionEnd
-
-Section /o -un.FileExtensionRegistration
-  # windows registry info: http://support.microsoft.com/kb/256986
-  !insertmacro OpenMSTOPPViewExtensions UnRegisterExtensionSection
-  call Un.RefreshShellIcons
-SectionEnd
-
-Section /o -un.license UNSEC0008
-    Delete /REBOOTOK "$INSTDIR\License.gpl-2.0.txt"
-    Delete /REBOOTOK "$INSTDIR\License.lgpl-2.1.txt"
-    Delete /REBOOTOK "$INSTDIR\License.libSVM.txt"
-    Delete /REBOOTOK "$INSTDIR\License.NetCDF.txt"
-    
-    Delete /REBOOTOK "$INSTDIR\ReleaseNotes.txt"
-SectionEnd
-
-Section -un.doc UNSEC0007
-    RmDir /r /REBOOTOK $INSTDIR\doc
-SectionEnd
-
-Section /o -un.lib UNSEC0000
-    Delete /REBOOTOK $INSTDIR\bin\mingwm10.dll
-    Delete /REBOOTOK $INSTDIR\bin\QtSql4.dll
-    Delete /REBOOTOK $INSTDIR\bin\QtOpenGL4.dll
-    Delete /REBOOTOK $INSTDIR\bin\QtNetwork4.dll
-    Delete /REBOOTOK $INSTDIR\bin\QtGui4.dll
-    Delete /REBOOTOK $INSTDIR\bin\QtCore4.dll
-        
-    # old: # Delete /REBOOTOK $INSTDIR\lib\libOpenMS.dll
-    !insertmacro UnInstallLib REGDLL SHARED REBOOT_PROTECTED $INSTDIR\bin\libOpenMS.dll
-    
-    Delete /REBOOTOK $INSTDIR\bin\libxerces-c2_7_0.dll
-    RmDir /r /REBOOTOK $INSTDIR\bin
-    
-    RmDir /r /REBOOTOK ${OPENMSDIR}\share
-
-SectionEnd
-
-Section -un.post UNSEC0003
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
-    Delete /REBOOTOK $INSTDIR\uninstall.exe
-    DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
-    DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
-    DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /REBOOTOK $INSTDIR
-    Push $R0
-    StrCpy $R0 $StartMenuGroup 1
-    StrCmp $R0 ">" no_smgroup
-no_smgroup:
-    Pop $R0
-SectionEnd
-
 # Installer functions
 Function .onInit
+
+    # show splash screen
     InitPluginsDir
     Push $R1
     File /oname=$PLUGINSDIR\spltmp.bmp OpenMS_splash.bmp
     advsplash::show 1000 600 400 -1 $PLUGINSDIR\spltmp
     Pop $R1
     Pop $R1
+    
+    # check for previous versions
+    #on install we did:     WriteRegStr HKLM "${REGKEY}" "Path" "$INSTDIR"
+    ReadRegStr $R0  HKLM "${REGKEY}" "Path"
+    StrCmp $R0 "" virgin_install
+    
+    ## store, if the old-installer is present ($R8 should be empty then)
+    ReadRegStr $R8  HKLM "${REGKEY}" "UninstallString"    
+
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+      "OpenMS has already been installed. $\nThe old version will be removed automatically. \
+       Please close all OpenMS applications before continuing!" \
+      IDCANCEL  quit_installer
+
+    ;Run the uninstaller
+    ClearErrors
+    ExecWait '$R0\uninstall.exe _?=$INSTDIR' ;Do not execute the copy of uninstaller (ExecWait won큧 work)
+    Delete "$R0\uninstall.exe"          # delete installer manually
+    
+    push $R9
+    ${DirState} "$R0" $R9
+    StrCmp $R9 1 0 virgin_install
+    pop $R9
+    
+    # look for the very first (and buggy) version of the installer
+    StrCmp $R8 "" 0 new_installer    
+        # we found the old installer:
+        ## delete the licenses, share other stuff
+        RmDir /REBOOTOK "$R0\GUI"
+        RmDir /REBOOTOK /r "$R0\share"
+        Delete /REBOOTOK "$R0\*.txt"
+        ## correct Path settings (they were not properly reset)
+        Push "$R0\lib"
+        Call RemoveFromPath
+        Push "$R0\TOPP"
+        Call RemoveFromPath
+        Push "OPENMS_DATA_PATH"
+        Call DeleteEnvStr
+            
+    
+    new_installer:
+
+    ## check that all *.dll큦 and *.exe files are gone (userfiles are ok)! otherwise force reboot
+    !insertmacro REBOOT_ON_INCOMPLETE_DELETION $R0
+   
+  virgin_install:
+    
     !insertmacro MUI_LANGDLL_DISPLAY
+  
+    return
+    
+  quit_installer:
+    quit
+  
 FunctionEnd
+
+################
+## UNINSTALL ###
+################
+
+# Uninstaller sections
+
+Section "Uninstall"
+    ReadRegStr $INSTDIR HKLM "${REGKEY}" Path
+    !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
+    !insertmacro MUI_UNGETLANGUAGE
+
+
+    # unregister our dll    
+    UnRegDLL "$INSTDIR\bin\libOpenMS.dll"
+
+    # remove OpenMS from environment paths
+    Push "$INSTDIR\bin"
+    Call un.RemoveFromPath
+
+    Push "OPENMS_DATA_PATH"
+    Call un.DeleteEnvStr
+
+    # remove extension-links to TOPPView
+    !insertmacro OpenMSTOPPViewExtensions UnRegisterExtensionSection
+    ${un.RefreshShellIcons}
+
+    ## delete all installed files
+    FileOpen $UninstallLog "$INSTDIR\uninstall.log" r
+  UninstallLoop:
+    ClearErrors
+    FileRead $UninstallLog $R0
+    IfErrors UninstallEnd
+    Push $R0
+    Call un.TrimNewLines
+    Pop $R0
+    Delete $R0
+    Goto UninstallLoop
+  UninstallEnd:
+    FileClose $UninstallLog
+    Delete "$INSTDIR\uninstall.log"
+    Delete "$INSTDIR\uninstall.exe"
+    # remove directories which are now empty
+    Push "\"
+    Call un.RemoveEmptyDirs
+    
+    ## clean up the registry
+    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+    # delete /Software/OpenMS (with all its content)
+    DeleteRegKey HKLM "${REGKEY}"
+
+    # delete Startmenu-Entry
+    RmDir /r /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+    RmDir /REBOOTOK $INSTDIR
+
+
+SectionEnd
+
 
 Function CreateSMGroupShortcut
     Exch $R0 ;PATH
@@ -346,27 +440,6 @@ no_smgroup:
     Pop $R2
     Pop $R1
     Pop $R0
-FunctionEnd
-
-# Uninstaller functions
-Function un.onInit
-    ReadRegStr $INSTDIR HKLM "${REGKEY}" Path
-    !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
-    !insertmacro MUI_UNGETLANGUAGE
-    !insertmacro SELECT_UNSECTION lib ${UNSEC0000}
-    !insertmacro SELECT_UNSECTION "TOPP Tools" ${UNSEC0001}
-    !insertmacro SELECT_UNSECTION GUI ${UNSEC0002}
-FunctionEnd
-
-Function un.DeleteSMGroupShortcut
-    Exch $R1 ;NAME
-    Push $R2
-    StrCpy $R2 $StartMenuGroup 1
-    StrCmp $R2 ">" no_smgroup
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$R1.lnk"
-no_smgroup:
-    Pop $R2
-    Pop $R1
 FunctionEnd
 
 # Installer Language Strings

@@ -85,8 +85,8 @@ FunctionEnd
  
 ; RemoveFromPath - Remove a given dir from the path
 ;     Input: head of the stack
- 
-Function un.RemoveFromPath
+!macro RemoveFromPath un
+Function ${un}RemoveFromPath
   Exch $0
   Push $1
   Push $2
@@ -97,7 +97,7 @@ Function un.RemoveFromPath
  
   IntFmt $6 "%c" 26 # DOS EOF
  
-  Call un.IsNT
+  Call ${un}IsNT
   Pop $1
   StrCmp $1 1 unRemoveFromPath_NT
     ; Not on NT
@@ -140,7 +140,7 @@ Function un.RemoveFromPath
       StrCpy $1 "$1;" # append ;
     Push $1
     Push "$0;"
-    Call un.StrStr ; Find `$0;` in $1
+    Call ${un}StrStr ; Find `$0;` in $1
     Pop $2 ; pos of our dir
     StrCmp $2 "" unRemoveFromPath_done
       ; else, it is in path
@@ -168,6 +168,9 @@ Function un.RemoveFromPath
     Pop $1
     Pop $0
 FunctionEnd
+!macroend
+!insertmacro RemoveFromPath ""
+!insertmacro RemoveFromPath "un."
  
  
  
@@ -334,7 +337,107 @@ Function un.RemoveFromEnvVar
 FunctionEnd
  
  
+#
+# WriteEnvStr - Writes an environment variable
+# Note: Win9x systems requires reboot
+#
+# Example:
+#  Push "HOMEDIR"           # name
+#  Push "C:\New Home Dir\"  # value
+#  Call WriteEnvStr
+#
+Function WriteEnvStr
+  Exch $1 ; $1 has environment variable value
+  Exch
+  Exch $0 ; $0 has environment variable name
+  Push $2
  
+  Call IsNT
+  Pop $2
+  StrCmp $2 1 WriteEnvStr_NT
+    ; Not on NT
+    StrCpy $2 $WINDIR 2 ; Copy drive of windows (c:)
+    FileOpen $2 "$2\autoexec.bat" a
+    FileSeek $2 0 END
+    FileWrite $2 "$\r$\nSET $0=$1$\r$\n"
+    FileClose $2
+    SetRebootFlag true
+    Goto WriteEnvStr_done
+ 
+  WriteEnvStr_NT:
+      WriteRegExpandStr ${WriteEnvStr_RegKey} $0 $1
+      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} \
+        0 "STR:Environment" /TIMEOUT=5000
+ 
+  WriteEnvStr_done:
+    Pop $2
+    Pop $0
+    Pop $1
+FunctionEnd
+ 
+#
+# un.DeleteEnvStr - Removes an environment variable
+# Note: Win9x systems requires reboot
+#
+# Example:
+#  Push "HOMEDIR"           # name
+#  Call un.DeleteEnvStr
+#
+ 
+!macro DeleteEnvStr un
+Function ${un}DeleteEnvStr
+  Exch $0 ; $0 now has the name of the variable
+  Push $1
+  Push $2
+  Push $3
+  Push $4
+  Push $5
+ 
+  Call ${un}IsNT
+  Pop $1
+  StrCmp $1 1 DeleteEnvStr_NT
+    ; Not on NT
+    StrCpy $1 $WINDIR 2
+    FileOpen $1 "$1\autoexec.bat" r
+    GetTempFileName $4
+    FileOpen $2 $4 w
+    StrCpy $0 "SET $0="
+    SetRebootFlag true
+ 
+    DeleteEnvStr_dosLoop:
+      FileRead $1 $3
+      StrLen $5 $0
+      StrCpy $5 $3 $5
+      StrCmp $5 $0 DeleteEnvStr_dosLoop
+      StrCmp $5 "" DeleteEnvStr_dosLoopEnd
+      FileWrite $2 $3
+      Goto DeleteEnvStr_dosLoop
+ 
+    DeleteEnvStr_dosLoopEnd:
+      FileClose $2
+      FileClose $1
+      StrCpy $1 $WINDIR 2
+      Delete "$1\autoexec.bat"
+      CopyFiles /SILENT $4 "$1\autoexec.bat"
+      Delete $4
+      Goto DeleteEnvStr_done
+ 
+  DeleteEnvStr_NT:
+    DeleteRegValue ${WriteEnvStr_RegKey} $0
+    SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} \
+      0 "STR:Environment" /TIMEOUT=5000
+ 
+  DeleteEnvStr_done:
+    Pop $5
+    Pop $4
+    Pop $3
+    Pop $2
+    Pop $1
+    Pop $0
+FunctionEnd
+!macroend
+!insertmacro DeleteEnvStr ""
+!insertmacro DeleteEnvStr "un." 
  
 !ifndef IsNT_KiCHiK
 !define IsNT_KiCHiK
@@ -440,18 +543,6 @@ Done:
 FunctionEnd
 
 
-Function RefreshShellIcons
-  ; By jerome tremblay - april 2003
-  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
-  (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
-FunctionEnd
-
-Function Un.RefreshShellIcons
-  ; By jerome tremblay - april 2003
-  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
-  (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
-FunctionEnd
-
 ##############################
 ### register filetypes (code borrowed from VLC project)
 ;; Function that register one extension for VLC
@@ -500,10 +591,13 @@ NoOwn:
 FunctionEnd
 
 !macro RegisterExtensionSection EXT
-  Push $R0
-  StrCpy $R0 ${EXT}
-  Call RegisterExtension
-  Pop $R0
+  Section ${EXT}
+    SectionIn 1 3
+    Push $R0
+    StrCpy $R0 ${EXT}
+    Call RegisterExtension
+    Pop $R0
+  SectionEnd
 !macroend
 
 !macro UnRegisterExtensionSection EXT
@@ -512,3 +606,23 @@ FunctionEnd
   Call un.RegisterExtension
   Pop $R0
 !macroend
+
+
+!macro REBOOT_ON_INCOMPLETE_DELETION PROGRAMPATH
+    ClearErrors
+    SetRebootFlag false
+    # old installer directory structure
+    Delete /REBOOTOK ${PROGRAMPATH}\lib\*.dll
+    Delete /REBOOTOK ${PROGRAMPATH}\GUI\*.exe
+    Delete /REBOOTOK ${PROGRAMPATH}\TOPP\*.exe
+    # new installer directory structure
+    Delete /REBOOTOK ${PROGRAMPATH}\bin\*.dll
+    Delete /REBOOTOK ${PROGRAMPATH}\bin\*.exe
+
+    IfRebootFlag 0 noreboot
+        MessageBox MB_OK|MB_ICONQUESTION "Not all OpenMS files could be deleted. A reboot is required! \
+                                             Click 'OK' when you are ready to reboot."
+        Reboot
+    noreboot:
+!macroend
+
