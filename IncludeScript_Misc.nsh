@@ -559,7 +559,7 @@ NoBackup:
   WriteRegStr HKCR "OPENMS$R0" "" "OPENMS data file ($R0)"
   #WriteRegStr HKCR "OPENMS$R0\shell" "" "Open"
   WriteRegStr HKCR "OPENMS$R0\shell\open\command" "" '"$INSTDIR\bin\TOPPView.exe" "%1"'
-  WriteRegStr HKCR "OPENMS$R0\DefaultIcon" "" '"$INSTDIR\share\OpenMS.ico",0'
+  WriteRegStr HKCR "OPENMS$R0\DefaultIcon" "" '"$INSTDIR\share\OpenMS_TOPPView.ico",0'
 
 ;;; Vista Only part
   ; Vista detection

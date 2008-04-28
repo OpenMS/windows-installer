@@ -11,7 +11,7 @@ Name "OpenMS"
 # path to contrib
 !define CONTRIBDIR "D:\uni\OpenMS_Win\my\contrib"
 # path to OpenMS
-!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS"
+!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS_Release1.1"
 # OpenMS version
 !define VERSION 1.1
 # make sure this one has 4 version-levels
@@ -36,6 +36,9 @@ Name "OpenMS"
 !define REGKEY "SOFTWARE\$(^Name)"
 #!define COMPANY "Free University of Berlin"
 !define URL http://www.open-ms.de
+
+# we write to the registry and therefore need admin priviliges for VISTA
+RequestExecutionLevel admin
 
 # Included files
 !include Sections.nsh
@@ -64,7 +67,7 @@ Var StartMenuGroup
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "OpenMS ${VERSION}"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "OpenMS"
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\ReleaseNotes.txt
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -176,7 +179,7 @@ Section "OpenMS Library" SEC_Lib
     !endif
     
     # icon for files associated with TOPPView
-    !insertmacro InstallFile "OpenMS.ico"
+    !insertmacro InstallFile "OpenMS_TOPPView.ico"
     
     !insertmacro CloseUninstallLog
 SectionEnd
@@ -196,7 +199,6 @@ Section "TOPP tools" SEC_TOPP
     !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
     !insertmacro CREATE_SMGROUP_SHORTCUT INIFileEditor $INSTDIR\bin\INIFileEditor.exe
     !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.open-ms.de/
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation" $INSTDIR\doc\index.html
     !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP command line" "$INSTDIR\bin\command.bat"
 
     !insertmacro CloseUninstallLog
@@ -213,6 +215,8 @@ Section "Documentation" SEC_Doc
     !if ${DEBUG_BUILD} == 0
         !insertmacro InstallFolder "${OPENMSDIR}\doc\html\*.*" ".svn\"
     !endif    
+
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation" $INSTDIR\doc\index.html
 
     !insertmacro CloseUninstallLog
 SectionEnd
@@ -367,6 +371,15 @@ Function .onInit
     quit
   
 FunctionEnd
+
+
+# set the component descriptions after the Sections have been defined!
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_Lib} "The core libraries of OpenMS"
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_TOPP} "TOPP (The OpenMS Proteomics Pipeline) - chainable tools for data analysis"
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_Doc} "Documentation/Tutorials for TOPP, TOPPView and the OpenMS library itself."
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_RegisterExt} "Register certain file types (e.g. '.mzData') with TOPPView.exe"
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ################
 ## UNINSTALL ###

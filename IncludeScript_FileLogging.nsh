@@ -1,5 +1,3 @@
-!include FileFunc.nsh
-
 ## most of this is copied from VLC install script
 ## , with bugfixes and decorated with some additional comments for better understanding
 
