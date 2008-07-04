@@ -11,11 +11,11 @@ Name "OpenMS"
 # path to contrib
 !define CONTRIBDIR "D:\uni\OpenMS_Win\my\contrib"
 # path to OpenMS
-!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS_Release1.1"
+!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS"
 # OpenMS version
-!define VERSION 1.1
+!define VERSION 1.1.1
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.1.0.0
+!define VERSION_LONG 1.1.1.0
 
 # which extensions to connect to TOPPView
 !macro OpenMSTOPPViewExtensions _action
@@ -35,7 +35,7 @@ Name "OpenMS"
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
 #!define COMPANY "Free University of Berlin"
-!define URL http://www.open-ms.de
+!define URL http://www.OpenMS.de
 
 # we write to the registry and therefore need admin priviliges for VISTA
 RequestExecutionLevel admin
@@ -83,7 +83,7 @@ Var StartMenuGroup
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
+#!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
 # Installer languages
@@ -198,7 +198,7 @@ Section "TOPP tools" SEC_TOPP
 
     !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
     !insertmacro CREATE_SMGROUP_SHORTCUT INIFileEditor $INSTDIR\bin\INIFileEditor.exe
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.open-ms.de/
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.OpenMS.de/
     !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP command line" "$INSTDIR\bin\command.bat"
 
     !insertmacro CloseUninstallLog
@@ -332,7 +332,7 @@ Function .onInit
 
     ;Run the uninstaller
     ClearErrors
-    ExecWait '$R0\uninstall.exe _?=$INSTDIR' ;Do not execute the copy of uninstaller (ExecWait won´t work)
+    ExecWait '$R0\uninstall.exe _?=$R0';; Do not execute the copy of uninstaller (ExecWait won´t work)
     Delete "$R0\uninstall.exe"          # delete installer manually
     
     push $R9
