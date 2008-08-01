@@ -13,9 +13,9 @@ Name "OpenMS"
 # path to OpenMS
 !define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS"
 # OpenMS version
-!define VERSION 1.1.1
+!define VERSION 1.2
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.1.1.0
+!define VERSION_LONG 1.2.0.0
 
 # which extensions to connect to TOPPView
 !macro OpenMSTOPPViewExtensions _action
@@ -34,7 +34,7 @@ Name "OpenMS"
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-#!define COMPANY "Free University of Berlin"
+!define COMPANY "OpenMS Developer Team"
 !define URL http://www.OpenMS.de
 
 # we write to the registry and therefore need admin priviliges for VISTA
