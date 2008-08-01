@@ -11,7 +11,7 @@ Name "OpenMS"
 # path to contrib
 !define CONTRIBDIR "D:\uni\OpenMS_Win\my\contrib"
 # path to OpenMS
-!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS"
+!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS_Release1.2"
 # OpenMS version
 !define VERSION 1.2
 # make sure this one has 4 version-levels
@@ -154,7 +154,9 @@ Section "OpenMS Library" SEC_Lib
     !insertmacro OpenUninstallLog
 
     # install file (with logging)
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libxerces-c2_7_0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libxerces-c2_8_0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgsl-0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgslcblas-0.dll"
     
     # Installing library ..\OpenMS\lib\libOpenMS.dll
     # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
