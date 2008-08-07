@@ -6,7 +6,7 @@ additional required software:
 
 Quick guide:
 - fully compile and test OpenMS
-- create the documentation (make doc idoc in OpenMS/doc)
+- create the documentation ("make doc" (NOT! idoc) in OpenMS/doc)
 - compile OpenMS_installer.nsi using NSIS (this should create a file named OpenMS_setup.exe)
 - distribute
 
