@@ -214,11 +214,21 @@ Section "Documentation" SEC_Doc
     SetOutPath $INSTDIR\doc
     SetOverwrite on
     
+		## html docu
     !if ${DEBUG_BUILD} == 0
         !insertmacro InstallFolder "${OPENMSDIR}\doc\html\*.*" ".svn\"
     !endif    
 
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation" $INSTDIR\doc\index.html
+		!insertmacro InstallFile "${OPENMSDIR}\doc\TOPP_tutorial.pdf"
+		!insertmacro InstallFile "${OPENMSDIR}\doc\OpenMS_tutorial.pdf"
+
+		## warning: create shortcuts only AFTER installing files, OR renew SetOutPath
+		## otherwise all files will be installed to the default install directory
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation (html)" $INSTDIR\doc\index.html
+
+    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP Documentation (pdf)" $INSTDIR\doc\TOPP_tutorial.pdf
+    !insertmacro CREATE_SMGROUP_SHORTCUT "Tutorial (pdf)" $INSTDIR\doc\OpenMS_tutorial.pdf
+
 
     !insertmacro CloseUninstallLog
 SectionEnd
