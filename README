@@ -22,10 +22,9 @@ Verify the installer:
   > perl TOPPTest_Assembler.pl  /d/uni/OpenMS_Win/my/OpenMS
   	
 	Now, copy the folder /OpenMS/source/TEST/TOPP/ to System B and run TOPP_test.bat (which should have been created by the perl script).
-	Check for anything containing 
 	
-	TOPP Command in line <xy> failed!
-	
-	, where <xy> will give the actual line number.
+	Check if the script runs through without pausing (which means that something needs your attention).
+	If you´re picky, then check the whole output of the script. Sometimes a TOPP-tool might give a warning
+	and still produce the correct result, thus the script will not remind you of that.
 	
 	
