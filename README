@@ -5,7 +5,7 @@ additional required software:
  
 
 Quick guide:
-- fully compile and test OpenMS
+- fully compile and test OpenMS (make lib install TOPP UTILS)
 - create the documentation ("make doc" (NOT! idoc) in OpenMS/doc)
 - create the PDF´s (tutorial and TOPP Docu) - might not work on windows, so copy them to /doc manually.
 - compile OpenMS_installer.nsi using NSIS (this should create a file named OpenMS_setup.exe)
