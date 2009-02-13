@@ -6,6 +6,10 @@ Name "OpenMS"
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
 !define DEBUG_BUILD 0
 
+#enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
+#!define VS_REDISTRIBUTABLE_EXE "vcredist_x86.exe"
+!define VS_REDISTRIBUTABLE_EXE "vcredist_x64.exe"
+
 # path to QT libs
 !define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3\bin"
 # path to contrib
@@ -13,6 +17,8 @@ Name "OpenMS"
 # path to OpenMS
 !define OPENMSDIR "C:\dev\OpenMS1_3branch_build"
 !define OPENMSDIRSRC "C:\dev\OpenMS1_3branch"
+!define OPENMSDOCDIR "Z:\tmp\doc"
+
 # OpenMS version
 !define VERSION 1.3
 # make sure this one has 4 version-levels
@@ -178,7 +184,7 @@ Section "OpenMS Library" SEC_Lib
     SetOutPath $INSTDIR\share
     SetOverwrite on
     !if ${DEBUG_BUILD} == 0 
-        !insertmacro InstallFolder "${OPENMSDIR}\share\*.*" ".svn\"
+        !insertmacro InstallFolder "${OPENMSDIRSRC}\share\*.*" ".svn\"
     !endif
     
     # icon for files associated with TOPPView
@@ -217,11 +223,11 @@ Section "Documentation" SEC_Doc
     
 		## html docu
     !if ${DEBUG_BUILD} == 0
-        !insertmacro InstallFolder "${OPENMSDIR}\doc\html\*.*" ".svn\"
+        !insertmacro InstallFolder "${OPENMSDOCDIR}\html\*.*" ".svn\"
     !endif    
 
-		!insertmacro InstallFile "${OPENMSDIR}\doc\TOPP_tutorial.pdf"
-		!insertmacro InstallFile "${OPENMSDIR}\doc\OpenMS_tutorial.pdf"
+		!insertmacro InstallFile "${OPENMSDOCDIR}\TOPP_tutorial.pdf"
+		!insertmacro InstallFile "${OPENMSDOCDIR}\OpenMS_tutorial.pdf"
 
 		## warning: create shortcuts only AFTER installing files, OR renew SetOutPath
 		## otherwise all files will be installed to the default install directory
@@ -299,6 +305,27 @@ SectionGroup "Register File Extensions" SEC_RegisterExt
     SectionEnd
         
 SectionGroupEnd
+
+Section "-hidden VSRuntime"
+		#install the visual studio runtime
+		#NSISdl::download http://www.domain.com/file localfile.exe
+		#Pop $R0 ;Get the return value
+		#	StrCmp $R0 "success" +3
+		#		MessageBox MB_OK "The download of the Visual Studio redistributable failed!\nP"
+		#		Quit
+
+		SetOutPath $TEMP
+    SetOverwrite on
+
+    !insertmacro InstallFile  ${VS_REDISTRIBUTABLE_EXE}
+		ClearErrors
+    ExecWait '$TEMP\${VS_REDISTRIBUTABLE_EXE} /q' $0
+		StrCmp $0 0 vs_install_success
+		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed!\nOpenMS will not work unless this package is installed!\nPlease install it manually or contact the OpenMS developers!"
+		
+		vs_install_success:
+		
+SectionEnd
 
 Section -post SEC0008
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR

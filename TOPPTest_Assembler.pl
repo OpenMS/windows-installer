@@ -52,7 +52,11 @@ foreach $line (@makefile)
 			#skip DBImporter test
 		}
 		else {
-			push @cmds, $1;
+			$cmd = $1;
+			## delete paths
+			$cmd = substr($cmd, length($OMS_path)+5);
+			$cmd =~ s!$OMSSRC_path/source/TEST/TOPP/!!g;
+			push @cmds, $cmd;
 			push @cmds, "IF ERRORLEVEL 1 ECHO TOPP Command in line $#cmds failed! Press any key to continue.";
 			push @cmds, "IF ERRORLEVEL 1 pause";
 		}
