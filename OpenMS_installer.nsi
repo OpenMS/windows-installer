@@ -7,15 +7,16 @@ Name "OpenMS"
 !define DEBUG_BUILD 0
 
 # path to QT libs
-!define QTLIBDIR "C:\Qt\4.3.4\bin"
+!define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3\bin"
 # path to contrib
-!define CONTRIBDIR "D:\uni\OpenMS_Win\my\contrib"
+!define CONTRIBDIR "C:\dev\contrib_build"
 # path to OpenMS
-!define OPENMSDIR "D:\uni\OpenMS_Win\my\OpenMS_Release1.2"
+!define OPENMSDIR "C:\dev\OpenMS1_3branch_build"
+!define OPENMSDIRSRC "C:\dev\OpenMS1_3branch"
 # OpenMS version
-!define VERSION 1.2
+!define VERSION 1.3
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.2.0.0
+!define VERSION_LONG 1.3.0.0
 
 # which extensions to connect to TOPPView
 !macro OpenMSTOPPViewExtensions _action
@@ -62,7 +63,7 @@ ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
 Var StartMenuGroup
 
 # MUI defines
-!define MUI_ICON OpenMS.ico
+#!define MUI_ICON OpenMS.ico
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
@@ -77,7 +78,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE ${OPENMSDIR}\License.txt
+!insertmacro MUI_PAGE_LICENSE ${OPENMSDIRSRC}\License.txt
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -154,16 +155,16 @@ Section "OpenMS Library" SEC_Lib
     !insertmacro OpenUninstallLog
 
     # install file (with logging)
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libxerces-c2_8_0.dll"
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgsl-0.dll"
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgslcblas-0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgsl.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgslcblas.dll"
     
     # Installing library ..\OpenMS\lib\libOpenMS.dll
     # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
     #this should be obsolete: !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
     
-    !insertmacro InstallFile "${OPENMSDIR}\lib\libOpenMS.dll"
-    RegDLL "$INSTDIR\bin\libOpenMS.dll"
+    #!insertmacro InstallFile "${OPENMSDIR}\lib\libOpenMS.dll"
+    #RegDLL "$INSTDIR\bin\libOpenMS.dll"
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
@@ -171,7 +172,7 @@ Section "OpenMS Library" SEC_Lib
         !insertmacro InstallFile "${QTLIBDIR}\QtNetwork4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtOpenGL4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtSql4.dll"
-        !insertmacro InstallFile "${QTLIBDIR}\mingwm10.dll"
+        #!insertmacro InstallFile "${QTLIBDIR}\mingwm10.dll"
     !endif
 
     SetOutPath $INSTDIR\share
@@ -241,10 +242,10 @@ Section "-License" SEC_License
     SetOutPath $INSTDIR
     SetOverwrite on
 
-    !insertmacro InstallFile  "${OPENMSDIR}\License.gpl-2.0.txt"
-    !insertmacro InstallFile  "${OPENMSDIR}\License.lgpl-2.1.txt"
-    !insertmacro InstallFile  "${OPENMSDIR}\License.libSVM.txt"
-    !insertmacro InstallFile  "${OPENMSDIR}\License.NetCDF.txt"
+    #!insertmacro InstallFile  "${OPENMSDIR}\License.gpl-2.0.txt"
+    #!insertmacro InstallFile  "${OPENMSDIR}\License.lgpl-2.1.txt"
+    #!insertmacro InstallFile  "${OPENMSDIR}\License.libSVM.txt"
+    #!insertmacro InstallFile  "${OPENMSDIR}\License.NetCDF.txt"
     !insertmacro InstallFile  "ReleaseNotes.txt"
 
     !insertmacro CloseUninstallLog
