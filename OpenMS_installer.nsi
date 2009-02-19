@@ -7,8 +7,8 @@ Name "OpenMS"
 !define DEBUG_BUILD 0
 
 #enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
-#!define VS_REDISTRIBUTABLE_EXE "vcredist_x86.exe"
-!define VS_REDISTRIBUTABLE_EXE "vcredist_x64.exe"
+!define VS_REDISTRIBUTABLE_EXE "vcredist_x86.exe"
+#!define VS_REDISTRIBUTABLE_EXE "vcredist_x64.exe"
 
 # path to QT libs
 !define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3\bin"
@@ -33,6 +33,7 @@ Name "OpenMS"
   !insertmacro ${_action} ".dta2D"
   !insertmacro ${_action} ".cdf"
   !insertmacro ${_action} ".featureXML"
+  !insertmacro ${_action} ".consensusXML"
 !macroend
 
 ##################
