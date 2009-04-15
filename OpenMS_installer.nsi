@@ -14,15 +14,17 @@ Name "OpenMS"
 !define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3\bin"
 # path to contrib
 !define CONTRIBDIR "C:\dev\contrib_build"
-# path to OpenMS
-!define OPENMSDIR "C:\dev\OpenMS1_3branch_build"
-!define OPENMSDIRSRC "C:\dev\OpenMS1_3branch"
+# path to OpenMS - build tree
+!define OPENMSDIR "C:\dev\OpenMS_build"
+# path to OpenMS - source tree
+!define OPENMSDIRSRC "C:\dev\OpenMS"
+# path to OpenMS - doc (for windows is usually hard to set up to build the doc)
 !define OPENMSDOCDIR "Z:\tmp\doc"
 
 # OpenMS version
-!define VERSION 1.3
+!define VERSION 1.4
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.3.0.0
+!define VERSION_LONG 1.4.0.0
 
 # which extensions to connect to TOPPView
 !macro OpenMSTOPPViewExtensions _action
@@ -170,8 +172,8 @@ Section "OpenMS Library" SEC_Lib
     # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
     #this should be obsolete: !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
     
-    #!insertmacro InstallFile "${OPENMSDIR}\lib\libOpenMS.dll"
-    #RegDLL "$INSTDIR\bin\libOpenMS.dll"
+    !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
+    #RegDLL "$INSTDIR\bin\OpenMS.dll"
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
@@ -203,7 +205,7 @@ Section "TOPP tools" SEC_TOPP
     SetOverwrite on
     
     !if ${DEBUG_BUILD} == 0
-        !insertmacro InstallFile ${OPENMSDIR}\bin\*.exe
+        !insertmacro InstallFile ${OPENMSDIR}\bin\Release\*.exe
     !endif
 
     !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
@@ -435,7 +437,7 @@ Section "Uninstall"
 
 
     # unregister our dll    
-    UnRegDLL "$INSTDIR\bin\libOpenMS.dll"
+    #UnRegDLL "$INSTDIR\bin\OpenMS.dll"
 
     # remove OpenMS from environment paths
     Push "$INSTDIR\bin"
