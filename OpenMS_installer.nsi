@@ -236,8 +236,8 @@ Section "Documentation" SEC_Doc
 		## otherwise all files will be installed to the default install directory
     !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation (html)" $INSTDIR\doc\index.html
 
-    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP Documentation (pdf)" $INSTDIR\doc\TOPP_tutorial.pdf
-    !insertmacro CREATE_SMGROUP_SHORTCUT "Tutorial (pdf)" $INSTDIR\doc\OpenMS_tutorial.pdf
+    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP and TOPPView tutorial (pdf)" $INSTDIR\doc\TOPP_tutorial.pdf
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Tutorial (pdf)" $INSTDIR\doc\OpenMS_tutorial.pdf
 
 
     !insertmacro CloseUninstallLog
