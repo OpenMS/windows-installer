@@ -7,8 +7,8 @@ if (@ARGV < 1)
 
 print "Setting $OMS_path to $ARGV[0]!\n";
 
-$OMS_path = 'C:/dev/OpenMS1_3branch_build';
-$OMSSRC_path = 'C:/dev/OpenMS1_3branch';
+$OMS_path = 'C:/dev/OpenMS_build';
+$OMSSRC_path = 'C:/dev/OpenMS';
 #$OMS_path = $ARGV[0];
 
 $enable_DB = 0;

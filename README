@@ -18,9 +18,12 @@ Verify the installer:
 - do NOT assume that sucessfully installing OpenMS_setup.exe on the system A means that the installer will work
   on a new system (B)! But you can at least check for major quirks.
 - check if all files were created and start-menu entries are present and working
-- to test the TOPP tools, run TOPPTest_Assembler.pl on System A within an MSYS console
+- to test the TOPP tools, run TOPPTest_Assembler.pl on System A
   e.g.
-  > perl TOPPTest_Assembler.pl  /d/uni/OpenMS_Win/my/OpenMS
+	adapt paths within TOPPTest_Assembler.pl
+	> open a VS command line:
+	> cd c:\<path to win_installer_dir>
+  > TOPPTest_Assembler.pl
   	
 	Now, copy the folder /OpenMS/source/TEST/TOPP/ to System B and run TOPP_test.bat (which should have been created by the perl script).
 	
