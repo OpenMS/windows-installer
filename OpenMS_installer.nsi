@@ -16,7 +16,9 @@ Name "OpenMS"
 ##################
 
 # contains the OpenMS version
+!ifndef VERSION
 !include Cfg_Version.nsh
+!endif
 
 # set OpenMS paths and other stuff (if not already set by parent script)
 !ifndef VS_REDISTRIBUTABLE_EXE
