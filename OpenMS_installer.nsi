@@ -1,31 +1,28 @@
 Name "OpenMS"
 
+##################
+###   config   ###
+##################
 
-### edit this to suit your system
+### edit the below files to suit your system
+# - Cfg_Version.nsh
+# - Cfg_Settings.nsh
 
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
 !define DEBUG_BUILD 0
 
-#enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
-#!define VS_REDISTRIBUTABLE_EXE "vcredist2008_x86.exe"
-#!define VS_REDISTRIBUTABLE_EXE "vcredist_x86.exe"
-!define VS_REDISTRIBUTABLE_EXE "vcredist_x64.exe"
+##################
+### end config ###
+##################
 
-# path to QT libs
-!define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3\bin"
-# path to contrib
-!define CONTRIBDIR "C:\dev\contrib_build"
-# path to OpenMS - build tree
-!define OPENMSDIR "C:\dev\OpenMS_build"
-# path to OpenMS - source tree
-!define OPENMSDIRSRC "C:\dev\OpenMS"
-# path to OpenMS - doc (for windows is usually hard to set up to build the doc)
-!define OPENMSDOCDIR "Z:\tmp\doc"
+# contains the OpenMS version
+!include Cfg_Version.nsh
 
-# OpenMS version
-!define VERSION 1.4
-# make sure this one has 4 version-levels
-!define VERSION_LONG 1.4.0.0
+# set OpenMS paths and other stuff (if not already set by parent script)
+!ifndef VS_REDISTRIBUTABLE_EXE
+!include Cfg_Settings.nsh
+!endif
+
 
 # which extensions to connect to TOPPView
 !macro OpenMSTOPPViewExtensions _action
@@ -38,10 +35,6 @@ Name "OpenMS"
   !insertmacro ${_action} ".featureXML"
   !insertmacro ${_action} ".consensusXML"
 !macroend
-
-##################
-### end config ###
-##################
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
