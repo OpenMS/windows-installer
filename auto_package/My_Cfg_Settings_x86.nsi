@@ -1,7 +1,7 @@
 # OpenMS version
-!define VERSION head_32
+!define VERSION 1.5_32
 # make sure this one has 4 version-levels
-!define VERSION_LONG 9.9.9.9
+!define VERSION_LONG 1.5.0.0
 
 
 #enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
@@ -14,11 +14,11 @@
 # path to contrib
 !define CONTRIBDIR "C:\dev\contrib_build32"
 # path to OpenMS - build tree
-!define OPENMSDIR "C:\dev\AUTO_PACKAGE\OpenMS_build32"
+!define OPENMSDIR "C:\dev\AUTO_PACKAGE\release\OpenMS_build32"
 # path to OpenMS - source tree
-!define OPENMSDIRSRC "C:\dev\AUTO_PACKAGE\OpenMS"
+!define OPENMSDIRSRC "C:\dev\AUTO_PACKAGE\release\OpenMS"
 # path to OpenMS - doc (for windows is usually hard to set up to build the doc)
-!define OPENMSDOCDIR "C:\dev\AUTO_PACKAGE\OpenMS_build32\doc"
+!define OPENMSDOCDIR "C:\dev\AUTO_PACKAGE\release\OpenMS_build32\doc"
 
 
 ## eigentlicher Installer:
