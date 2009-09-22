@@ -10,6 +10,8 @@ Name "OpenMS"
 
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
 !define DEBUG_BUILD 0
+# set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
+!define DEBUG_SKIP_DOCU 0
 
 ##################
 ### end config ###
@@ -161,15 +163,9 @@ Section "OpenMS Library" SEC_Lib
 
     # install file (with logging)
     !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_0.dll"
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgsl.dll"
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\libgslcblas.dll"
-    
-    # Installing library ..\OpenMS\lib\libOpenMS.dll
-    # old: # File D:\uni\OpenMS_Win\my\OpenMS\lib\libOpenMS.dll
-    #this should be obsolete: !insertmacro InstallLib REGDLL 1 REBOOT_PROTECTED ${OPENMSDIR}\lib\libOpenMS.dll $INSTDIR\bin\libOpenMS.dll $INSTDIR\bin
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
-    #RegDLL "$INSTDIR\bin\OpenMS.dll"
+
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
@@ -177,7 +173,6 @@ Section "OpenMS Library" SEC_Lib
         !insertmacro InstallFile "${QTLIBDIR}\QtNetwork4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtOpenGL4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtSql4.dll"
-        #!insertmacro InstallFile "${QTLIBDIR}\mingwm10.dll"
     !endif
 
     SetOutPath $INSTDIR\share
@@ -186,8 +181,9 @@ Section "OpenMS Library" SEC_Lib
         !insertmacro InstallFolder "${OPENMSDIRSRC}\share\*.*" ".svn\"
     !endif
     
-    # icon for files associated with TOPPView
+    # icon for *files* associated with TOPPView
     !insertmacro InstallFile "OpenMS_TOPPView.ico"
+    !insertmacro InstallFile "OpenMS_TOPPAS.ico"
     
     !insertmacro CloseUninstallLog
 SectionEnd
@@ -222,8 +218,8 @@ Section "Documentation" SEC_Doc
     SetOverwrite on
     
 		## html docu
-    !if ${DEBUG_BUILD} == 0
-        !insertmacro InstallFolder "${OPENMSDOCDIR}\html\*.*" ".svn\"
+    !if ${DEBUG_SKIP_DOCU} == 0
+			!insertmacro InstallFolder "${OPENMSDOCDIR}\html\*.*" ".svn\"
     !endif    
 
 		!insertmacro InstallFile "${OPENMSDOCDIR}\TOPP_tutorial.pdf"

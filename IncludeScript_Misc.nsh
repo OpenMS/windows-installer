@@ -591,7 +591,7 @@ NoOwn:
 FunctionEnd
 
 !macro RegisterExtensionSection EXT PROGRAMEXE
-  Section ${EXT} ${PROGRAMEXE}
+  Section ${EXT}
     SectionIn 1 3
     Push $R0
 		Push $R1
