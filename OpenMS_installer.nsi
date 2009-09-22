@@ -25,17 +25,17 @@ Name "OpenMS"
 !include Cfg_Settings.nsh
 !endif
 
-
-# which extensions to connect to TOPPView
-!macro OpenMSTOPPViewExtensions _action
-  !insertmacro ${_action} ".mzData"
-  !insertmacro ${_action} ".mzXML"
-  !insertmacro ${_action} ".mzML"
-  !insertmacro ${_action} ".dta"
-  !insertmacro ${_action} ".dta2D"
-  !insertmacro ${_action} ".cdf"
-  !insertmacro ${_action} ".featureXML"
-  !insertmacro ${_action} ".consensusXML"
+# which extensions to connect to TOPPView and TOPPAS
+!macro OpenMSGUIExtensions _action
+  !insertmacro ${_action} ".mzData" "TOPPView"
+  !insertmacro ${_action} ".mzXML" "TOPPView"
+  !insertmacro ${_action} ".mzML" "TOPPView"
+  !insertmacro ${_action} ".dta" "TOPPView"
+  !insertmacro ${_action} ".dta2D" "TOPPView"
+  !insertmacro ${_action} ".cdf" "TOPPView"
+  !insertmacro ${_action} ".featureXML" "TOPPView"
+  !insertmacro ${_action} ".consensusXML" "TOPPView"
+  !insertmacro ${_action} ".toppas" "TOPPAS"
 !macroend
 
 # Defines
@@ -297,7 +297,7 @@ SectionGroup "Register File Extensions" SEC_RegisterExt
 
 
     # windows registry info: http://support.microsoft.com/kb/256986
-    !insertmacro OpenMSTOPPViewExtensions RegisterExtensionSection
+    !insertmacro OpenMSGUIExtensions RegisterExtensionSection
     
     Section "-RegFileRefreshInternal" SEC_RegFileRefreshInternal
         SectionIn 1 2 3
@@ -444,7 +444,7 @@ Section "Uninstall"
     Call un.DeleteEnvStr
 
     # remove extension-links to TOPPView
-    !insertmacro OpenMSTOPPViewExtensions UnRegisterExtensionSection
+    !insertmacro OpenMSGUIExtensions UnRegisterExtensionSection
     ${un.RefreshShellIcons}
 
     ## delete all installed files

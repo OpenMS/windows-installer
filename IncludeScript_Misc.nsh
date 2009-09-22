@@ -548,7 +548,7 @@ FunctionEnd
 ;; Function that register one extension for VLC
 
 Function RegisterExtension
-  ; back up old value for extension $R0 (eg. ".mzData")
+  ; back up old value for extension $R0 (eg. ".mzData") and Program $R1 (e.g. TOPPView)
   ReadRegStr $1 HKCR "$R0" ""
   StrCmp $1 "" NoBackup
     StrCmp $1 "OPENMS$R0" "NoBackup"
@@ -558,8 +558,8 @@ NoBackup:
   ReadRegStr $0 HKCR "OPENMS$R0" ""
   WriteRegStr HKCR "OPENMS$R0" "" "OPENMS data file ($R0)"
   #WriteRegStr HKCR "OPENMS$R0\shell" "" "Open"
-  WriteRegStr HKCR "OPENMS$R0\shell\open\command" "" '"$INSTDIR\bin\TOPPView.exe" "%1"'
-  WriteRegStr HKCR "OPENMS$R0\DefaultIcon" "" '"$INSTDIR\share\OpenMS_TOPPView.ico",0'
+  WriteRegStr HKCR "OPENMS$R0\shell\open\command" "" '"$INSTDIR\bin\$R1.exe" "%1"'
+  WriteRegStr HKCR "OPENMS$R0\DefaultIcon" "" '"$INSTDIR\share\OpenMS_$R1.ico",0'
 
 ;;; Vista Only part
   ; Vista detection
@@ -590,20 +590,26 @@ NoOwn:
 #   DeleteRegKey HKLM "Software\Clients\Media\OPENMS\Capabilities\FileAssociations\OPENMS$R0" ; for vista
 FunctionEnd
 
-!macro RegisterExtensionSection EXT
-  Section ${EXT}
+!macro RegisterExtensionSection EXT PROGRAMEXE
+  Section ${EXT} ${PROGRAMEXE}
     SectionIn 1 3
     Push $R0
-    StrCpy $R0 ${EXT}
-    Call RegisterExtension
-    Pop $R0
+		Push $R1
+		StrCpy $R0 ${EXT}
+		StrCpy $R1 ${PROGRAMEXE}
+		Call RegisterExtension
+		Pop $R1
+		Pop $R0
   SectionEnd
 !macroend
 
-!macro UnRegisterExtensionSection EXT
+!macro UnRegisterExtensionSection EXT PROGRAMEXE
   Push $R0
+	Push $R1
   StrCpy $R0 ${EXT}
+	StrCpy $R1 ${PROGRAMEXE}
   Call un.RegisterExtension
+	Pop $R1
   Pop $R0
 !macroend
 
