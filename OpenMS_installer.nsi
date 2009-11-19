@@ -27,6 +27,11 @@ Name "OpenMS"
 !include Cfg_Settings.nsh
 !endif
 
+
+!ifndef PLATFORM
+!define PLATFORM 32
+!endif
+
 # which extensions to connect to TOPPView and TOPPAS
 !macro OpenMSGUIExtensions _action
   !insertmacro ${_action} ".mzData" "TOPPView"
@@ -106,7 +111,11 @@ InstType "Full"         #3
 
 # Installer attributes
 OutFile OpenMS-${VERSION}_setup.exe
-InstallDir "$PROGRAMFILES\OpenMS-${VERSION}"
+!if ${PLATFORM} == 32
+	InstallDir "$PROGRAMFILES32\OpenMS-${VERSION}"
+!else
+	InstallDir "$PROGRAMFILES64\OpenMS-${VERSION}"
+!endif
 CRCCheck on
 XPStyle on
 ShowInstDetails hide
