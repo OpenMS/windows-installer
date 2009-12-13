@@ -326,7 +326,7 @@ Section "-hidden VSRuntime"
 		ClearErrors
     ExecWait '$TEMP\${VS_REDISTRIBUTABLE_EXE} /q' $0
 		StrCmp $0 0 vs_install_success
-		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed!\nOpenMS will not work unless this package is installed!\nPlease install it manually or contact the OpenMS developers!"
+		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed! OpenMS will not work unless this package is installed! Please install it manually or contact the OpenMS developers!"
 		
 		vs_install_success:
 		
