@@ -55,8 +55,8 @@ Name "OpenMS"
 RequestExecutionLevel admin
 
 # Included files
+!include MUI2.nsh
 !include Sections.nsh
-!include MUI.nsh
 !include Library.nsh
 !include FileFunc.nsh
 !define ALL_USERS
@@ -66,6 +66,17 @@ RequestExecutionLevel admin
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
 ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
+
+;--------------------------------
+;Interface Configuration
+
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP ".\images\header.bmp" ; optional
+!define MUI_HEADERIMAGE_UNBITMAP ".\images\header-uninstall.bmp" ; optional
+!define MUI_HEADERIMAGE_RIGHT
+!define MUI_ABORTWARNING
+!define MUI_WELCOMEFINISHPAGE_BITMAP ".\images\wizard.bmp" ; optional
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\images\wizard-uninstall.bmp" ; optional
 
 !insertmacro RefreshShellIcons
 !insertmacro un.RefreshShellIcons
