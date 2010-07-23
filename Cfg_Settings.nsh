@@ -1,9 +1,9 @@
 
 ## define your platform:
-!define PLATFORM "32"
+!define PLATFORM "64"
 
 
-!if ${PLATFORM} == 32
+!if ${PLATFORM} == 64
   #enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
   !define VS_REDISTRIBUTABLE_EXE "vcredist2008_x86.exe"
   #!define VS_REDISTRIBUTABLE_EXE "vcredist2005_x86.exe"

@@ -1,9 +1,22 @@
 Name "OpenMS"
 
+## useful resources:
+# http://abarinoff-dev.blogspot.com/2010/04/passing-parameters-and-retrieving.html
+# http://nsis.sourceforge.net/UAC_plug-in
+
+## using the UAC-plugin the installer is run in elevated mode my default (inner instance). If you want to
+## do some user specific action (e.g. Start-Menu entries) you need to use the UAC's wrappers and calls
+
+##################
+###   TODO     ###
+##################
+### copy UAC.dll to your NSIS plug-in directory before running the installer script!
+### otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
+
+
 ##################
 ###   config   ###
 ##################
-
 ### edit the below files to suit your system
 # - Cfg_Version.nsh
 # - Cfg_Settings.nsh
@@ -13,8 +26,10 @@ Name "OpenMS"
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
 !define DEBUG_SKIP_DOCU 0
 
+
+
 ##################
-### end config ###
+###   SCRIPT   ###
 ##################
 
 # contains the OpenMS version
@@ -26,8 +41,6 @@ Name "OpenMS"
 !ifndef VS_REDISTRIBUTABLE_EXE
 !include Cfg_Settings.nsh
 !endif
-
-
 !ifndef PLATFORM
 !define PLATFORM 32
 !endif
@@ -50,18 +63,22 @@ Name "OpenMS"
 !define REGKEY "SOFTWARE\$(^Name)"
 !define COMPANY "OpenMS Developer Team"
 !define URL http://www.OpenMS.de
+!define APPNAME "OpenMS"
 
-# we write to the registry and therefore need admin priviliges for VISTA
-RequestExecutionLevel admin
+## UAC plugin requires us to use normal user privileges
+##, it will launch an admin process within the user process automatically
+RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Included files
 !include MUI2.nsh
 !include Sections.nsh
 !include Library.nsh
 !include FileFunc.nsh
-!define ALL_USERS
+!include UAC.nsh
+#!define ALL_USERS
 !include IncludeScript_Misc.nsh
 !include IncludeScript_FileLogging.nsh
+!include EnvVarUpdate.nsh
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
@@ -116,6 +133,12 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 !insertmacro MUI_LANGUAGE French
 
+# Installer Language Strings
+LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
+LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
+LangString ^UninstallLink ${LANG_FRENCH} "Uninstall $(^Name)"
+
+
 # predefined installation modes
 InstType "Recommended"  #1
 InstType "Minimum"      #2
@@ -142,32 +165,60 @@ VIAddVersionKey /LANG=${LANG_GERMAN} LegalCopyright ""
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails hide
 
-
-Section "-hidden TESTING"
-System::Alloc 32
-Pop $1
-System::Call "Kernel32::GlobalMemoryStatus(i) v (r1)"
-System::Call "*$1(&i4 .r2, &i4 .r3, &i4 .r4, &i4 .r5, \
-                  &i4 .r6, &i4.r7, &i4 .r8, &i4 .r9)"
-System::Free $1
-DetailPrint "Structure size (useless): $2 Bytes"
-DetailPrint "Memory load: $3%"
-DetailPrint "Total physical memory: $4 Bytes"
-## do something with that!!
-
-DetailPrint "Free physical memory: $5 Bytes"
-DetailPrint "Total page file: $6 Bytes"
-DetailPrint "Free page file: $7 Bytes"
-DetailPrint "Total virtual: $8 Bytes"
-DetailPrint "Free virtual: $9 Bytes"
-
-SectionEnd
+; HKLM (all users) vs HKCU (current user) defines
+!define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+!define env_hkcu 'HKCU "Environment"'
 
 !macro CREATE_SMGROUP_SHORTCUT NAME PATH
     Push "${NAME}"
     Push "${PATH}"
     Call CreateSMGroupShortcut
 !macroend
+
+Function CreateSMGroupShortcut
+    Exch $R0 ;PATH
+    Exch
+    Exch $R1 ;NAME
+    Push $R2
+    StrCpy $R2 $StartMenuGroup 1
+    StrCmp $R2 ">" no_smgroup
+    SetOutPath $SMPROGRAMS\$StartMenuGroup
+    StrCpy $OUTDIR "$INSTDIR"       # execute link target in $OUTDIR
+    
+    CreateDirectory "$SMPrograms\${APPNAME}"
+    CreateShortcut "$SMPROGRAMS\${APPNAME}\$R1.lnk" $R0
+    ## TODO (currently the start menu entry is in admin space)
+    #UAC::StackPush "$SMPROGRAMS\$StartMenuGroup\$R1.lnk"
+    #UAC::StackPush  $R0
+    #GetFunctionAddress $1 CreateShortcut
+    #UAC::ExecCodeSegment $1    
+no_smgroup:
+    Pop $R2
+    Pop $R1
+    Pop $R0
+FunctionEnd
+
+
+
+; Section "-hidden TESTING"
+; System::Alloc 32
+; Pop $1
+; System::Call "Kernel32::GlobalMemoryStatus(i) v (r1)"
+; System::Call "*$1(&i4 .r2, &i4 .r3, &i4 .r4, &i4 .r5, \
+                  ; &i4 .r6, &i4.r7, &i4 .r8, &i4 .r9)"
+; System::Free $1
+; DetailPrint "Structure size (useless): $2 Bytes"
+; DetailPrint "Memory load: $3%"
+; DetailPrint "Total physical memory: $4 Bytes"
+; ## do something with that!!
+
+; DetailPrint "Free physical memory: $5 Bytes"
+; DetailPrint "Total page file: $6 Bytes"
+; DetailPrint "Free page file: $7 Bytes"
+; DetailPrint "Total virtual: $8 Bytes"
+; DetailPrint "Free virtual: $9 Bytes"
+; SectionEnd
+
 
 # Installer sections
 Section "OpenMS Library" SEC_Lib
@@ -221,14 +272,9 @@ Section "TOPP tools" SEC_TOPP
         !insertmacro InstallFile ${OPENMSDIR}\bin\Release\*.exe
     !endif
 
-    !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
-    !insertmacro CREATE_SMGROUP_SHORTCUT TOPPAS $INSTDIR\bin\TOPPAS.exe
-    !insertmacro CREATE_SMGROUP_SHORTCUT INIFileEditor $INSTDIR\bin\INIFileEditor.exe
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.OpenMS.de/
-    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP command line" "$INSTDIR\bin\command.bat"
-
     !insertmacro CloseUninstallLog
 SectionEnd
+
 
 Section "Documentation" SEC_Doc
     SectionIn 1 3
@@ -241,18 +287,9 @@ Section "Documentation" SEC_Doc
 		## html docu
     !if ${DEBUG_SKIP_DOCU} == 0
 			!insertmacro InstallFolder "${OPENMSDOCDIR}\html\*.*" ".svn\"
+      !insertmacro InstallFile "${OPENMSDOCDIR}\TOPP_tutorial.pdf"
+      !insertmacro InstallFile "${OPENMSDOCDIR}\OpenMS_tutorial.pdf"
     !endif    
-
-		!insertmacro InstallFile "${OPENMSDOCDIR}\TOPP_tutorial.pdf"
-		!insertmacro InstallFile "${OPENMSDOCDIR}\OpenMS_tutorial.pdf"
-
-		## warning: create shortcuts only AFTER installing files, OR renew SetOutPath
-		## otherwise all files will be installed to the default install directory
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation (html)" $INSTDIR\doc\index.html
-
-    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP and TOPPView tutorial (pdf)" $INSTDIR\doc\TOPP_tutorial.pdf
-    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Tutorial (pdf)" $INSTDIR\doc\OpenMS_tutorial.pdf
-
 
     !insertmacro CloseUninstallLog
 SectionEnd
@@ -272,6 +309,36 @@ Section "-License" SEC_License
     !insertmacro InstallFile  "ReleaseNotes.txt"
 
     !insertmacro CloseUninstallLog
+SectionEnd
+
+Function CreateShortcuts
+    #StrCpy ${APPNAME} $9 ;stupid sync
+
+    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    
+		## warning: create shortcuts only AFTER installing files, OR renew SetOutPath
+		## otherwise all files will be installed to the default install directory
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Documentation (html)" $INSTDIR\doc\index.html
+    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP and TOPPView tutorial (pdf)" $INSTDIR\doc\TOPP_tutorial.pdf
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Tutorial (pdf)" $INSTDIR\doc\OpenMS_tutorial.pdf
+
+    !insertmacro CREATE_SMGROUP_SHORTCUT TOPPView $INSTDIR\bin\TOPPView.exe
+    !insertmacro CREATE_SMGROUP_SHORTCUT TOPPAS $INSTDIR\bin\TOPPAS.exe
+    !insertmacro CREATE_SMGROUP_SHORTCUT INIFileEditor $INSTDIR\bin\INIFileEditor.exe
+    !insertmacro CREATE_SMGROUP_SHORTCUT "OpenMS Homepage" http://www.OpenMS.de/
+    !insertmacro CREATE_SMGROUP_SHORTCUT "TOPP command line" "$INSTDIR\bin\command.bat"
+
+    SetOutPath $SMPROGRAMS\${APPNAME}
+    CreateShortcut "$SMPROGRAMS\${APPNAME}\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
+    !insertmacro MUI_STARTMENU_WRITE_END
+    
+FunctionEnd
+
+
+Section "-Create_StartMenu" SEC_StartMenuCreate
+  StrCpy $9 ${SMSUBDIR} ;this is stupid as hell, we need correct ${SMSUBDIR} in the outer process, this is the only way (plugins cannot enum "custom" var's AFAIK)
+  GetFunctionAddress $0 CreateShortcuts
+  UAC::ExecCodeSegment $0
 SectionEnd
 
 Section "-Create_command_bat" SEC_CmdBat
@@ -299,13 +366,14 @@ Section "-PathInst" SEC_PathRegister
     SectionIn 1 2 3
     # no logging required, as we do not install files in this section
     
-    Push "$INSTDIR\bin"
-    Call AddToPath
+    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\bin"
 
     #create OpenMS data path (for shared xml files etc)
-    Push "OPENMS_DATA_PATH"
-    Push "$INSTDIR\share\OpenMS"
-    Call WriteEnvStr
+    ; set variable
+    WriteRegExpandStr ${env_hklm} "OPENMS_DATA_PATH" "$INSTDIR\share\OpenMS"
+    ; make sure windows knows about the change
+    SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+    #${EnvVarUpdate} $0 "OPENMS_DATA_PATH" "A" "HKLM" "$INSTDIR\share\OpenMS"
 
 SectionEnd
 
@@ -324,6 +392,9 @@ SectionGroup "Register File Extensions" SEC_RegisterExt
 SectionGroupEnd
 
 Section "-hidden VSRuntime"
+    # this requires admin priviliges (which we should have, due to UAC plugin)!
+    
+    ## TODO (when bored)
 		#install the visual studio runtime
 		#NSISdl::download http://www.domain.com/file localfile.exe
 		#Pop $R0 ;Get the return value
@@ -338,8 +409,11 @@ Section "-hidden VSRuntime"
 		ClearErrors
     ExecWait '$TEMP\${VS_REDISTRIBUTABLE_EXE} /q' $0
 		StrCmp $0 0 vs_install_success
-		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed! OpenMS will not work unless this package is installed! Please install it manually or contact the OpenMS developers!"
+		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed! OpenMS will not work unless this package is installed! The package is located at '$TEMP\${VS_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
 		
+    ## reasons why the install might fail:
+    ## see doc\doxygen\install\install-win-bin.doxygen --> FAQ
+    
 		vs_install_success:
 		
 SectionEnd
@@ -349,10 +423,6 @@ Section -post SEC0008
     WriteRegStr HKLM "${REGKEY}" "UninstallString" "$INSTDIR\uninstall.exe"
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
-    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
-    !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
     #WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
@@ -364,8 +434,36 @@ Section -post SEC0008
 SectionEnd
 
 # Installer functions
+; Attempt to give the UAC plug-in a user process and an admin process.
 Function .onInit
 
+## UAC init:
+## copied from http://nsis.sourceforge.net/UAC_plug-in
+
+UAC_Elevate:
+    UAC::RunElevated 
+    StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+    StrCmp 0 $0 0 UAC_Err ; Error?
+    StrCmp 1 $1 0 UAC_Success ;Are we the real deal or just the wrapper?
+    Quit
+ 
+UAC_Err:
+    MessageBox mb_iconstop "Unable to elevate, error $0"
+    Abort
+ 
+UAC_ElevationAborted:
+    # elevation was aborted, run as normal?
+    MessageBox mb_iconstop "This installer requires admin access, aborting!"
+    Abort
+ 
+UAC_Success:
+    StrCmp 1 $3 +4 ;Admin?
+    StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
+    MessageBox mb_iconstop "This installer requires admin access, try again"
+    goto UAC_Elevate 
+ 
+## now our own code:
+ 
     # show splash screen
     InitPluginsDir
     Push $R1
@@ -405,13 +503,13 @@ Function .onInit
         RmDir /REBOOTOK /r "$R0\share"
         Delete /REBOOTOK "$R0\*.txt"
         ## correct Path settings (they were not properly reset)
-        Push "$R0\lib"
-        Call RemoveFromPath
-        Push "$R0\TOPP"
-        Call RemoveFromPath
-        Push "OPENMS_DATA_PATH"
-        Call DeleteEnvStr
-            
+        ${EnvVarUpdate} $0 "PATH" "R" "HKLM" "$R0\lib"
+        ${EnvVarUpdate} $0 "PATH" "R" "HKLM" "$R0\TOPP"
+        ; delete variable
+        DeleteRegValue ${env_hklm} "OPENMS_DATA_PATH"
+        ; make sure windows knows about the change
+        SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+        #${EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$R0\lib"
     
     new_installer:
 
@@ -427,6 +525,14 @@ Function .onInit
   quit_installer:
     quit
   
+FunctionEnd
+
+Function .OnInstFailed
+   UAC::Unload ;Must call unload!
+FunctionEnd
+ 
+Function .OnInstSuccess
+   UAC::Unload ;Must call unload!
 FunctionEnd
 
 
@@ -450,15 +556,10 @@ Section "Uninstall"
     !insertmacro MUI_UNGETLANGUAGE
 
 
-    # unregister our dll    
-    #UnRegDLL "$INSTDIR\bin\OpenMS.dll"
-
     # remove OpenMS from environment paths
-    Push "$INSTDIR\bin"
-    Call un.RemoveFromPath
-
-    Push "OPENMS_DATA_PATH"
-    Call un.DeleteEnvStr
+    ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\bin"
+    
+    ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
 
     # remove extension-links to TOPPView
     !insertmacro OpenMSGUIExtensions UnRegisterExtensionSection
@@ -488,35 +589,60 @@ Section "Uninstall"
     # delete /Software/OpenMS (with all its content)
     DeleteRegKey HKLM "${REGKEY}"
 
-    # delete Startmenu-Entry
-    RmDir /r /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+    
     RmDir /REBOOTOK $INSTDIR
+
+    ## delete start menu entries (via user process to find the correct $SMPrograms directory)
+    GetFunctionAddress $0 un.clearStartMenu
+    UAC::ExecCodeSegment $0
 
 
 SectionEnd
 
-
-Function CreateSMGroupShortcut
-    Exch $R0 ;PATH
-    Exch
-    Exch $R1 ;NAME
-    Push $R2
-    StrCpy $R2 $StartMenuGroup 1
-    StrCmp $R2 ">" no_smgroup
-    SetOutPath $SMPROGRAMS\$StartMenuGroup
-    StrCpy $OUTDIR "$INSTDIR"       # execute link target in $OUTDIR
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$R1.lnk" $R0
-no_smgroup:
-    Pop $R2
-    Pop $R1
-    Pop $R0
+Function un.clearStartMenu
+   # delete Startmenu-Entry
+   RmDir /r /REBOOTOK $SMPrograms\${APPNAME}
 FunctionEnd
 
-# Installer Language Strings
-# TODO Update the Language Strings with the appropriate translations.
+# Installer functions
+; Attempt to give the UAC plug-in a user process and an admin process.
+Function un.onInit
 
-LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_FRENCH} "Uninstall $(^Name)"
+## UAC init:
+## copied from http://nsis.sourceforge.net/UAC_plug-in
+
+UAC_Elevate:
+    UAC::RunElevated 
+    StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+    StrCmp 0 $0 0 UAC_Err ; Error?
+    StrCmp 1 $1 0 UAC_Success ;Are we the real deal or just the wrapper?
+    Quit
+ 
+UAC_Err:
+    MessageBox mb_iconstop "Unable to elevate, error $0"
+    Abort
+ 
+UAC_ElevationAborted:
+    # elevation was aborted, run as normal?
+    MessageBox mb_iconstop "This installer requires admin access, aborting!"
+    Abort
+ 
+UAC_Success:
+    StrCmp 1 $3 +4 ;Admin?
+    StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
+    MessageBox mb_iconstop "This installer requires admin access, try again"
+    goto UAC_Elevate 
+
+FunctionEnd
+ 
+ 
+Function un.OnInstFailed
+   UAC::Unload ;Must call unload!
+FunctionEnd
+ 
+Function un.OnInstSuccess
+   UAC::Unload ;Must call unload!
+FunctionEnd
+
 
 
