@@ -1,7 +1,7 @@
 # OpenMS version
-!define VERSION 1.6_64
+!define VERSION 1.7
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.6.0.0
+!define VERSION_LONG 1.7.0.0
 
 
 #enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
@@ -21,7 +21,6 @@
 !define OPENMSDOCDIR "C:\dev\AUTO_PACKAGE\release\OpenMS_build\doc"
 
 !define PLATFORM "64"
-
 
 ## eigentlicher Installer:
 

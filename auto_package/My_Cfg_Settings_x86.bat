@@ -2,9 +2,6 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" amd64
 
 set PATH=C:\dev\AUTO_PACKAGE\release;C:\dev\AUTO_PACKAGE\release\OpenMS_build32\bin\Release;C:\dev\contrib_build32\lib;C:\dev\qt-win-opensource-src-4.4.3_32\bin;%PATH%
 
-REM save old file
-move /Y Z:\bielow\OpenMS\OpenMS-1.5_32_setup.exe Z:\bielow\OpenMS\last_good_OpenMS-1.5_32_setup.exe
-
 REM update OpenMS
 svn up OpenMS
 IF %ERRORLEVEL% NEQ 0 goto bad_error
@@ -32,8 +29,8 @@ cd C:\dev\win_installer
 IF %ERRORLEVEL% NEQ 0 goto bad_error
 
 REM copy the resulting setup:
-copy C:\dev\win_installer\OpenMS-1.5_32_setup.exe C:\dev\AUTO_PACKAGE\release\
-copy C:\dev\win_installer\OpenMS-1.5_32_setup.exe Z:\bielow\OpenMS
+copy /Y C:\dev\win_installer\OpenMS-1.7_Win32_setup.exe C:\dev\AUTO_PACKAGE\release\
+copy /Y C:\dev\win_installer\OpenMS-1.7_Win32_setup.exe \\web\ftp.mi.fu-berlin.de\pub\bielow\OpenMS
 
 cd C:\dev\AUTO_PACKAGE\release
 
