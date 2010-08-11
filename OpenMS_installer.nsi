@@ -145,10 +145,11 @@ InstType "Minimum"      #2
 InstType "Full"         #3
 
 # Installer attributes
-OutFile OpenMS-${VERSION}_setup.exe
 !if ${PLATFORM} == 32
+	OutFile OpenMS-${VERSION}_Win32_setup.exe
 	InstallDir "$PROGRAMFILES32\OpenMS-${VERSION}"
 !else
+	OutFile OpenMS-${VERSION}_Win64_setup.exe
 	InstallDir "$PROGRAMFILES64\OpenMS-${VERSION}"
 !endif
 CRCCheck on
