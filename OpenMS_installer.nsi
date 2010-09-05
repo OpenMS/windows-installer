@@ -79,6 +79,7 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 !include IncludeScript_Misc.nsh
 !include IncludeScript_FileLogging.nsh
 !include EnvVarUpdate.nsh
+!include x64.nsh
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
@@ -472,7 +473,17 @@ UAC_Success:
     advsplash::show 1000 600 400 -1 $PLUGINSDIR\spltmp
     Pop $R1
     Pop $R1
-    
+
+	## deny starting of x64 installer on an x86 system (will not run)
+	!if ${PLATFORM} == 64
+		${If} ${RunningX64}
+		${else}
+		  MessageBox mb_iconstop "You are running a 32bit operating system. The executables of this setup are 64bit, and thus cannot be run after installation. Use a 64bit OS, or use the 32bit setup of OpenMS."
+		  Abort
+		${EndIf}
+	!endif
+	
+	
     # check for previous versions
     #on install we did:     WriteRegStr HKLM "${REGKEY}" "Path" "$INSTDIR"
     ReadRegStr $R0  HKLM "${REGKEY}" "Path"
