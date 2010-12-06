@@ -247,6 +247,7 @@ Section "OpenMS Library" SEC_Lib
         !insertmacro InstallFile "${QTLIBDIR}\QtNetwork4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtOpenGL4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtSql4.dll"
+        !insertmacro InstallFile "${QTLIBDIR}\QtSvg4.dll"
     !endif
 
     SetOutPath $INSTDIR\share
