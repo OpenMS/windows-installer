@@ -22,9 +22,9 @@ Name "OpenMS"
 # - Cfg_Settings.nsh
 
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
-!define DEBUG_BUILD 0
+!define DEBUG_BUILD 1
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
-!define DEBUG_SKIP_DOCU 0
+!define DEBUG_SKIP_DOCU 1
 
 
 
@@ -297,6 +297,23 @@ Section "Documentation" SEC_Doc
     !insertmacro CloseUninstallLog
 SectionEnd
 
+## install everything in <win_installer>\third_party\to_install\*
+Section "ThirdParty" SEC_ThirdParty
+    SectionIn 1 3
+    #open log file    
+    !insertmacro OpenUninstallLog
+
+    SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY
+    SetOverwrite on
+    
+		## html docu
+    !if ${DEBUG_BUILD} == 0
+			!insertmacro InstallFolder ".\third_party\to_install\*" ".svn\"
+    !endif    
+
+    !insertmacro CloseUninstallLog
+SectionEnd
+
 Section "-License" SEC_License
     SectionIn 1 2 3
     #open log file    
@@ -369,14 +386,20 @@ Section "-PathInst" SEC_PathRegister
     SectionIn 1 2 3
     # no logging required, as we do not install files in this section
     
+    ## HINT: do not forget to also add/modify the un.EnvVarUpdate in the uninstall section!
+    
+    # OpenMS binary path
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\bin"
-
-    #create OpenMS data path (for shared xml files etc)
+    
+    # Third Party library path
+    #  -- Proteowizard
+    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+    
+    #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
     WriteRegExpandStr ${env_hklm} "OPENMS_DATA_PATH" "$INSTDIR\share\OpenMS"
     ; make sure windows knows about the change
     SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
-    #${EnvVarUpdate} $0 "OPENMS_DATA_PATH" "A" "HKLM" "$INSTDIR\share\OpenMS"
 
 SectionEnd
 
@@ -554,6 +577,7 @@ FunctionEnd
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_Lib} "The core libraries of OpenMS"
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_TOPP} "TOPP (The OpenMS Proteomics Pipeline) - chainable tools for data analysis"
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_Doc} "Documentation/Tutorials for TOPP, TOPPView and the OpenMS library itself."
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_ThirdParty} "Install third party libraries (e.g. ProteoWizard)."
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_RegisterExt} "Register certain file types (e.g. '.mzData') with TOPPView.exe"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -568,10 +592,17 @@ Section "Uninstall"
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro MUI_UNGETLANGUAGE
 
-
-    # remove OpenMS from environment paths
+    ## undo changes to PATH 
+    
+    # OpenMS binary path
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\bin"
     
+    # Third Party library path
+    #  -- Proteowizard
+    ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+
+    
+    ## remove OPENMS_DATA_PATH
     ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
 
     # remove extension-links to TOPPView
