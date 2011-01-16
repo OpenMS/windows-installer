@@ -22,9 +22,9 @@ Name "OpenMS"
 # - Cfg_Settings.nsh
 
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
-!define DEBUG_BUILD 1
+!define DEBUG_BUILD 0
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
-!define DEBUG_SKIP_DOCU 1
+!define DEBUG_SKIP_DOCU 0
 
 
 
