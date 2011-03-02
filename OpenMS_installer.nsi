@@ -3,6 +3,7 @@ Name "OpenMS"
 ## useful resources:
 # http://abarinoff-dev.blogspot.com/2010/04/passing-parameters-and-retrieving.html
 # http://nsis.sourceforge.net/UAC_plug-in
+# http://nsis.sourceforge.net/Inetc_plug-in
 
 ## using the UAC-plugin the installer is run in elevated mode my default (inner instance). If you want to
 ## do some user specific action (e.g. Start-Menu entries) you need to use the UAC's wrappers and calls
@@ -12,6 +13,8 @@ Name "OpenMS"
 ##################
 ### copy UAC.dll to your NSIS plug-in directory before running the installer script!
 ### otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
+### copy UAC.dll to your NSIS plug-in directory before running the installer script!
+### otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
 
 
 ##################
@@ -306,11 +309,32 @@ Section "ThirdParty" SEC_ThirdParty
     SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY
     SetOverwrite on
     
-		## html docu
+	## html docu
     !if ${DEBUG_BUILD} == 0
 			!insertmacro InstallFolder ".\third_party\to_install\*" ".svn\"
     !endif    
 
+	## download .NET 3.5 (required by pwiz)
+	MessageBox MB_YESNO "The installer will now download 'Microsoft .NET 3.5 SP1', which is required by Proteowizard. \
+			   If you already have 'Microsoft .NET 3.5 SP1' installed (.NET 4 is not enough!) you can skip this step. Do you wish to download it?" \
+			   IDNO net_install_success
+
+    inetc::get /BANNER "Getting .NET installer." \
+			"http://www.microsoft.com/downloads/info.aspx?na=41&SrcFamilyId=AB99342F-5D1A-413D-8319-81DA479AB0D7&SrcDisplayLang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2f0%2f6%2f1%2f061F001C-8752-4600-A198-53214C69B51F%2fdotnetfx35setup.exe" \
+			"$EXEDIR\NET3.5_SP1_installer.exe"
+	Pop $0
+	StrCmp $0 "OK" dlok
+	MessageBox MB_OK|MB_ICONEXCLAMATION "Downloading 'Microsoft .NET 3.5 SP1' failed. You must download and install it manually in order for Proteowizard to work!"
+		
+	dlok:
+	ClearErrors
+    ExecWait '"$EXEDIR\NET3.5_SP1_installer.exe"' $0
+	StrCmp $0 0 net_install_success
+	MessageBox MB_OK "The installation of the Microsoft .NET 3.5 SP1' package failed! You must download and install it manually in order for Proteowizard to work!"
+	
+	net_install_success:
+	## .NET 3.5 installed, yeah!
+	
     !insertmacro CloseUninstallLog
 SectionEnd
 
@@ -428,19 +452,19 @@ Section "-hidden VSRuntime"
 		#		MessageBox MB_OK "The download of the Visual Studio redistributable failed!\nP"
 		#		Quit
 
-		SetOutPath $TEMP
+	SetOutPath $TEMP
     SetOverwrite on
 
     !insertmacro InstallFile  ${VS_REDISTRIBUTABLE_EXE}
-		ClearErrors
+	ClearErrors
     ExecWait '$TEMP\${VS_REDISTRIBUTABLE_EXE} /q' $0
-		StrCmp $0 0 vs_install_success
-		MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed! OpenMS will not work unless this package is installed! The package is located at '$TEMP\${VS_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
+	StrCmp $0 0 vs_install_success
+	MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_REDISTRIBUTABLE_EXE}' failed! OpenMS will not work unless this package is installed! The package is located at '$TEMP\${VS_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
 		
     ## reasons why the install might fail:
     ## see doc\doxygen\install\install-win-bin.doxygen --> FAQ
     
-		vs_install_success:
+	vs_install_success:
 		
 SectionEnd
 
