@@ -309,7 +309,7 @@ Section "ThirdParty" SEC_ThirdParty
     SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY
     SetOverwrite on
     
-	## html docu
+	## Third party libs (currently pwiz)
     !if ${DEBUG_BUILD} == 0
 			!insertmacro InstallFolder ".\third_party\to_install\*" ".svn\"
     !endif    
