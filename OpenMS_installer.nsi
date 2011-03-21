@@ -235,13 +235,14 @@ Section "OpenMS Library" SEC_Lib
     SetOutPath $INSTDIR\bin
     SetOverwrite on
 
-    #open log file    
+    # open log file    
     !insertmacro OpenUninstallLog
 
     # install file (with logging)
     !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_0.dll"
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
+    !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS_GUI.dll"
 
     
     !if ${DEBUG_BUILD} == 0 
