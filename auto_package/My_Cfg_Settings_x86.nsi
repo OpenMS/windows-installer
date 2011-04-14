@@ -1,7 +1,7 @@
 # OpenMS version
-!define VERSION 1.7
+!define VERSION 1.8
 # make sure this one has 4 version-levels
-!define VERSION_LONG 1.7.0.0
+!define VERSION_LONG 1.8.0.0
 
 
 #enable one of the following lines, depending on VS2005 32bit OR VS200864bit package creation!
@@ -10,7 +10,7 @@
 #!define VS_REDISTRIBUTABLE_EXE "vcredist2008_x64.exe"
 
 # path to QT libs
-!define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3_32\bin"
+!define QTLIBDIR "C:\dev\qt-everywhere-opensource-src-4.7.1_32\bin"
 # path to contrib
 !define CONTRIBDIR "C:\dev\contrib_build32"
 # path to OpenMS - build tree

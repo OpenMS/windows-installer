@@ -1,6 +1,6 @@
 call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" amd64
 
-set PATH=C:\dev\AUTO_PACKAGE\release;C:\dev\AUTO_PACKAGE\release\OpenMS_build\bin\Release;C:\dev\contrib_build\lib;C:\dev\qt-win-opensource-src-4.4.3\bin;%PATH%
+set PATH=C:\dev\AUTO_PACKAGE\release;C:\dev\AUTO_PACKAGE\release\OpenMS_build\bin\Release;C:\dev\contrib_build\lib;C:\dev\qt-everywhere-opensource-src-4.7.1\bin;%PATH%
 
 REM update OpenMS
 svn up OpenMS
@@ -18,6 +18,8 @@ devenv OpenMS_build/OpenMS.sln /Build "Release" /Project TOPP
 IF %ERRORLEVEL% NEQ 0 goto bad_error
 devenv OpenMS_build/OpenMS.sln /Build "Release" /Project UTILS
 IF %ERRORLEVEL% NEQ 0 goto bad_error
+devenv OpenMS_build/OpenMS.sln /Build "Release" /Project GUI
+IF %ERRORLEVEL% NEQ 0 goto bad_error
 devenv OpenMS_build/OpenMS.sln /Build "Release" /Project doc
 IF %ERRORLEVEL% NEQ 0 goto bad_error
 devenv OpenMS_build/OpenMS.sln /Build "Release" /Project doc_tutorials
@@ -29,8 +31,8 @@ cd C:\dev\win_installer
 IF %ERRORLEVEL% NEQ 0 goto bad_error
 
 REM copy the resulting setup:
-copy /Y C:\dev\win_installer\OpenMS-1.7_Win64_setup.exe C:\dev\AUTO_PACKAGE\release\
-copy /Y C:\dev\win_installer\OpenMS-1.7_Win64_setup.exe \\web\ftp.mi.fu-berlin.de\pub\bielow\OpenMS
+copy /Y C:\dev\win_installer\OpenMS-1.8_Win64_setup.exe C:\dev\AUTO_PACKAGE\release\
+copy /Y C:\dev\win_installer\OpenMS-1.8_Win64_setup.exe \\web\ftp.mi.fu-berlin.de\pub\OpenMS
 
 cd C:\dev\AUTO_PACKAGE\release
 
