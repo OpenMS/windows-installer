@@ -11,6 +11,7 @@ mkdir OpenMS_build32
 cd OpenMS_build32
 cmake -D CONTRIB_CUSTOM_DIR:PATH="C:\dev\contrib_build32" -G "Visual Studio 9 2008" "../OpenMS"
 IF %ERRORLEVEL% NEQ 0 goto bad_error
+rmdir /S /Q bin\Release
 cd..
 
 REM Build OpenMS
