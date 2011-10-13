@@ -13,7 +13,7 @@ Name "OpenMS"
 ##################
 ### copy UAC.dll to your NSIS plug-in directory before running the installer script!
 ### otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
-### copy UAC.dll to your NSIS plug-in directory before running the installer script!
+### copy inetc.dll/Inettc.zip to your NSIS plug-in directory before running the installer script!
 ### otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
 
 
