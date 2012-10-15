@@ -14,16 +14,6 @@
     <comClass clsid="{39913b26-a61d-472f-945f-932f24736ce5}" threadingModel="Apartment" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" progid="EDAL.MSSpectrumParameters.1" description="MSSpectrumParameterCollection Class" />
     <comClass clsid="{510c30e5-c631-4dc6-9183-4115b59fd462}" threadingModel="Apartment" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" progid="EDAL.MSSpectrumParameter.1" description="MSSpectrumParameter Class" />
   </file>
-  <file name="Interop.EDAL.dll" />
-  <file name="BDal.CXt.Lc.dll" />
-  <file name="BDal.CXt.Lc.Factory.dll" />
-  <file name="BDal.CXt.Lc.Interfaces.dll" />
-  <file name="BDal.CXt.Lc.UntU2.dll" />
-  <file name="libfftw3-3.dll" />
-  <file name="libfftw3f-3.dll" />
-  <file name="NTB-vc80-mt-4_3_61.dll" />
-  <file name="boost_regex-vc80-mt-1_33_1-BDAL_20070424.dll" />
-  <file name="boost_thread-vc80-mt-1_33_1-BDAL_20070424.dll" />
   <comInterfaceExternalProxyStub name="IMSAnalysis" iid="{401AFF6A-C542-4B50-8723-58C14BBABE06}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
   <comInterfaceExternalProxyStub name="IMSSpectrum" iid="{ac28c948-f617-4e6d-a31e-c1a7a4748c23}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
   <comInterfaceExternalProxyStub name="IMSSpectrumCollection" iid="{c2da5f65-b1c7-4bb8-bfa9-4c422ddcd2f7}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
@@ -31,4 +21,15 @@
   <comInterfaceExternalProxyStub name="IMSSpectrumParameter" iid="{f91ce7af-a338-467d-8e5f-9d1621254f6a}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
   <comInterfaceExternalProxyStub name="IMSSpectrumParameterCollection" iid="{9cc1cd9a-98d0-45b7-b8df-ca019cebd314}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
   <comInterfaceExternalProxyStub name="IMSSpectrumParameterEnumerator" iid="{c98ee3dc-f8dd-4aff-afd2-1c8d29af208e}" tlbid="{8e79b9a2-107e-4e91-a0ff-01f2591103f3}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}" />
+
+  <file name="BDal.CXt.Lc.dll" />
+  <file name="BDal.CXt.Lc.Factory.dll" />
+  <file name="BDal.CXt.Lc.Interfaces.dll" />
+  <file name="BDal.CXt.Lc.UntU2.dll" />
+  <file name="libfftw3-3.dll" />
+  <file name="libfftw3f-3.dll" />
+  <file name="NTB-vc80-mt-1_5_97.dll" />
+  <file name="boost_regex-vc80-mt-1_33_1-BDAL_20070424.dll" />
+  <file name="boost_thread-vc80-mt-1_33_1-BDAL_20070424.dll" />
+  <file name="boost_date_time-vc80-mt-1_33_1-BDAL_20070424.dll" />
 </assembly>

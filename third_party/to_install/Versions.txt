@@ -1,6 +1,6 @@
 Listing the Third-Party library versions installed in this folder.
 
 ProteoWizard (http://proteowizard.sourceforge.net/):
- pwiz-bin-windows-x86-vc90-release-2_1_2465.tar.bz2
+pwiz-bin-windows-x86-vc100-release-3_0_4006.tar.bz2
  
 ...
