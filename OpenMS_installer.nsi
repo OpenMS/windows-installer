@@ -243,7 +243,7 @@ Section "OpenMS Library" SEC_Lib
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS_GUI.dll"
-
+	!insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenSwathAlgo.dll"
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
@@ -253,7 +253,7 @@ Section "OpenMS Library" SEC_Lib
         !insertmacro InstallFile "${QTLIBDIR}\QtSql4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtSvg4.dll"
         !insertmacro InstallFile "${QTLIBDIR}\QtWebKit4.dll"
-				!insertmacro InstallFile "${QTLIBDIR}\phonon4.dll"   ## WebKit4 depends on it
+		!insertmacro InstallFile "${QTLIBDIR}\phonon4.dll"   ## WebKit4 depends on it
     !endif
 
     SetOutPath $INSTDIR\share
