@@ -421,6 +421,8 @@ Section "-PathInst" SEC_PathRegister
     # Third Party library path
     #  -- Proteowizard
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+	#  -- OMSSA
+    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
     
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
@@ -627,7 +629,8 @@ Section "Uninstall"
     # Third Party library path
     #  -- Proteowizard
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-
+    #  -- OMSSA
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
     
     ## remove OPENMS_DATA_PATH
     ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
