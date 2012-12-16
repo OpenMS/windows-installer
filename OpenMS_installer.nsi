@@ -11,10 +11,10 @@ Name "OpenMS"
 ##################
 ###   TODO     ###
 ##################
-### copy UAC.dll to your NSIS plug-in directory before running the installer script!
-### otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
-### copy inetc.dll/Inettc.zip to your NSIS plug-in directory before running the installer script!
-### otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
+### copy UAC.dll to your <PATH-to-NSIS>/Plugins directory before running the installer script!
+###   otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
+### extract the content of Inettc.zip to your <PATH-to-NSIS> directory before running the installer script!
+###   otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
 
 
 ##################
@@ -278,7 +278,7 @@ Section "TOPP tools" SEC_TOPP
     SetOverwrite on
     
     !if ${DEBUG_BUILD} == 0
-        !insertmacro InstallFile ${OPENMSDIR}\bin\Release\*.exe
+        !insertmacro InstallFile "${OPENMSDIR}\bin\Release\*.exe"
     !endif
 
     !insertmacro CloseUninstallLog

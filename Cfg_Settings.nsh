@@ -11,26 +11,26 @@
   # path to QT libs
   !define QTLIBDIR "C:\dev\qt-everywhere-opensource-src-4.7.1_vs10\bin"
   # path to contrib
-  !define CONTRIBDIR "C:\dev\contrib_build"
+  !define CONTRIBDIR "C:\dev\contrib_build32"
   # path to OpenMS - build tree
-  !define OPENMSDIR "C:\dev\OpenMS_build"
+  !define OPENMSDIR "C:\dev\OpenMS_build32"
   # path to OpenMS - source tree
   !define OPENMSDIRSRC "C:\dev\OpenMS"
   # path to OpenMS - doc (for windows is usually hard to set up to build the doc)
-  !define OPENMSDOCDIR "C:\dev\OpenMS_build\doc"
+  !define OPENMSDOCDIR "C:\dev\OpenMS_build32\doc"
 
 !else
-  !define VS_REDISTRIBUTABLE_EXE "vcredist2008_x64.exe"
+  !define VS_REDISTRIBUTABLE_EXE "vcredist2012_x64.exe"
 
   # path to QT libs
-  !define QTLIBDIR "C:\dev\qt-win-opensource-src-4.4.3_32\bin"
+  !define QTLIBDIR "C:\dev\qt-everywhere-opensource-src-4.8.2\bin"
   # path to contrib
-  !define CONTRIBDIR "C:\dev\contrib_build32"
+  !define CONTRIBDIR "C:\dev\contrib_build"
   # path to OpenMS - build tree
-  !define OPENMSDIR "C:\dev\openms_head_always_build32"
+  !define OPENMSDIR "C:\dev\OpenMS build"
   # path to OpenMS - source tree
-  !define OPENMSDIRSRC "C:\dev\openms_head_always"
+  !define OPENMSDIRSRC "C:\dev\OpenMS"
   # path to OpenMS - doc (for windows is usually hard to set up to build the doc)
-  !define OPENMSDOCDIR "Y:\tmp\doc"
+  !define OPENMSDOCDIR "C:\dev\OpenMS build\doc"
 !endif
 

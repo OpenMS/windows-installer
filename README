@@ -8,6 +8,7 @@ Quick guide:
 - fully compile and test OpenMS using a Visual Studio Generator (create the targets [OpenMS TOPP UTILS GUI] - NOT MORE!!)
 - create the documentation (target "doc" (NOT doc_internal) in OpenMS_build/doc)
   or: copy the doc folder from Linux if setting up documentation on Windows is too hard for you
+- read additional install information in the header of OpenMS_installer.nsi (!)
 - adapt settings in the header of OpenMS_installer.nsi to your needs
   or: see ./auto_package/*.nsi for example files, which you can just copy and modify.
 - compile OpenMS_installer.nsi using NSIS (this should create a file named OpenMS_setup.exe)
