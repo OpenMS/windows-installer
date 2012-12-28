@@ -73,6 +73,7 @@ Name "OpenMS"
 RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Included files
+!include LogicLib.nsh
 !include MUI2.nsh
 !include Sections.nsh
 !include Library.nsh
@@ -106,6 +107,9 @@ ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
 
 # Variables
 Var StartMenuGroup
+Var OMSSAInstalled
+Var XTandemInstalled
+Var MyriMatchInstalled
 
 # MUI defines
 #!define MUI_ICON OpenMS.ico
@@ -314,7 +318,35 @@ Section "ThirdParty" SEC_ThirdParty
     
 	## Third party libs (currently pwiz)
     !if ${DEBUG_BUILD} == 0
-			!insertmacro InstallFolder ".\third_party\to_install\*" ".svn\"
+			!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin" ".svn\"
+			
+			${If} ${FileExists} ".\third_party\to_install\OMSSA\*.*"
+				!insertmacro InstallFolder ".\third_party\to_install\OMSSA" ".svn\"
+				StrCpy $OMSSAInstalled "1"			
+			${EndIf}
+			
+			!insertmacro InstallFolder ".\third_party\to_install\OMSSA" ".svn\"
+			!if ${PLATFORM} == 64
+				${If} ${FileExists} ".\third_party\to_install\64bit\XTandem\*.*"
+					!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem" ".svn\"
+					StrCpy $XTandemInstalled "1"
+				${EndIf}				
+								
+				${If} ${FileExists} ".\third_party\to_install\64bit\MyriMatch\*.*"
+					!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch" ".svn\"
+					StrCpy $MyriMatchInstalled "1"	
+				${EndIf}					
+			!else
+				${If} ${FileExists} ".\third_party\to_install\32bit\XTandem\*.*"
+					!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem" ".svn\"
+					StrCpy $XTandemInstalled "1"
+				${EndIf}
+				
+				${If} ${FileExists} ".\third_party\to_install\32bit\MyriMatch\*.*"
+					!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch" ".svn\"
+					StrCpy $MyriMatchInstalled "1"
+				${EndIf}	
+			!endif
     !endif    
 
 	## download .NET 3.5 (required by pwiz)
@@ -422,7 +454,29 @@ Section "-PathInst" SEC_PathRegister
     #  -- Proteowizard
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
 	#  -- OMSSA
-    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
+	${If} $OMSSAInstalled == "1"
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
+	${EndIf}
+		
+	${If} $XTandemInstalled == "1"
+		!if ${PLATFORM} == 64
+			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"
+		!endif
+		
+		!if ${PLATFORM} == 32
+			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"		
+		!endif
+	${EndIf}
+	
+    ${If} $MyriMatchInstalled == "1"
+		!if ${PLATFORM} == 64
+			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
+		!endif
+		
+		!if ${PLATFORM} == 32
+			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"	
+		!endif
+	${EndIf}
     
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
@@ -629,9 +683,13 @@ Section "Uninstall"
     # Third Party library path
     #  -- Proteowizard
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-    #  -- OMSSA
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
-    
+    #  -- Searchengines
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"
+	    
     ## remove OPENMS_DATA_PATH
     ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
 
