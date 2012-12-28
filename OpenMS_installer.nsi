@@ -86,29 +86,6 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 !include x64.nsh
 !include LogicLib.nsh
 
-;FileExists is already part of LogicLib, but returns true for directories as well as files
-!macro _FileExists2 _a _b _t _f
-	!insertmacro _LOGICLIB_TEMP
-	StrCpy $_LOGICLIB_TEMP "0"
-	StrCmp `${_b}` `` +4 0 ;if path is not blank, continue to next check
-	IfFileExists `${_b}` `0` +3 ;if path exists, continue to next check (IfFileExists returns true if this is a directory)
-	IfFileExists `${_b}\*.*` +2 0 ;if path is not a directory, continue to confirm exists
-	StrCpy $_LOGICLIB_TEMP "1" ;file exists
-	;now we have a definitive value - the file exists or it does not
-	StrCmp $_LOGICLIB_TEMP "1" `${_t}` `${_f}`
-!macroend
-!undef FileExists
-!define FileExists `"" FileExists2`
-!macro _DirExists _a _b _t _f
-	!insertmacro _LOGICLIB_TEMP
-	StrCpy $_LOGICLIB_TEMP "0"	
-	StrCmp `${_b}` `` +3 0 ;if path is not blank, continue to next check
-	IfFileExists `${_b}\*.*` 0 +2 ;if directory exists, continue to confirm exists
-	StrCpy $_LOGICLIB_TEMP "1"
-	StrCmp $_LOGICLIB_TEMP "1" `${_t}` `${_f}`
-!macroend
-!define DirExists `"" DirExists`
-
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
 ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
@@ -337,50 +314,54 @@ Section "ThirdParty" SEC_ThirdParty
     #open log file    
     !insertmacro OpenUninstallLog
 
-    SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY
     SetOverwrite on
     
 	## Third party libs
-    !if ${DEBUG_BUILD} == 0
-			!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
-						
-			## In LogicLib, a single equals  sign (=) is used as a comparative operator for integers, rather than the traditional double equals sign (==), which is only valid for string comparisons.
-			${If} ${PLATFORM} = 64
-			${AndIf} ${DirExists} ".\third_party\to_install\64bit\OMSSA"
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
-				StrCpy $OMSSAInstalled "1"			
-			${EndIf}
-			
-			${If} ${PLATFORM} = 64
-			${AndIf} ${DirExists} ".\third_party\to_install\64bit\XTandem"
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
-				StrCpy $XTandemInstalled "1"
-			${EndIf}				
-			
-			${If} ${PLATFORM} = 64
-			${AndIf} ${DirExists} ".\third_party\to_install\64bit\MyriMatch"
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
-				StrCpy $MyriMatchInstalled "1"	
-			${EndIf}				
+	CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
+	SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
+	!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
 				
-			${If} ${PLATFORM} = 32
-			${AndIf} ${DirExists} ".\third_party\to_install\32bit\OMSSA"
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
-				StrCpy $OMSSAInstalled "1"			
-			${EndIf}
+	!if ${PLATFORM} == 64
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
+		!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
+		StrCpy $OMSSAInstalled "1"	
+	!endif
+	
+	!if ${PLATFORM} == 64
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
+		!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
+		StrCpy $XTandemInstalled "1"
+	!endif				
+	
+	!if ${PLATFORM} == 64
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
+		!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
+		StrCpy $MyriMatchInstalled "1"	
+	!endif
+		
+	!if ${PLATFORM} == 32
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
+		!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
+		StrCpy $OMSSAInstalled "1"			
+	!endif
 
-			${If} ${PLATFORM} = 32
-			${AndIf} ${DirExists} ".\third_party\to_install\32bit\XTandem"
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
-				StrCpy $XTandemInstalled "1"
-			${EndIf}
-			
-			${If} ${PLATFORM} = 32
-			${AndIf} ${DirExists} ".\third_party\to_install\32bit\MyriMatch"
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
-				StrCpy $MyriMatchInstalled "1"
-			${EndIf}	
-    !endif    
+	!if ${PLATFORM} == 32
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
+		!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
+		StrCpy $XTandemInstalled "1"
+	!endif
+	
+	!if ${PLATFORM} == 32
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
+		!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
+		StrCpy $MyriMatchInstalled "1"
+	!endif
 
 	## download .NET 3.5 (required by pwiz)
 	MessageBox MB_YESNO "The installer will now download 'Microsoft .NET 3.5 SP1', which is required by Proteowizard. \
@@ -486,30 +467,38 @@ Section "-PathInst" SEC_PathRegister
     # Third Party library path
     #  -- Proteowizard
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-	#  -- OMSSA
+		
+	#  -- Search Engines
 	${If} $OMSSAInstalled == "1"
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
+	${AndIf} ${PLATFORM} = 64
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA"
 	${EndIf}
-		
+
+	${If} $OMSSAInstalled == "1"
+	${AndIf} ${PLATFORM} = 32
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA"
+	${EndIf}
+
+	
 	${If} $XTandemInstalled == "1"
-		!if ${PLATFORM} == 64
-			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"
-		!endif
-		
-		!if ${PLATFORM} == 32
-			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"		
-		!endif
+	${AndIf} ${PLATFORM} = 64
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"
+	${EndIf}
+
+	${If} $XTandemInstalled == "1"
+	${AndIf} ${PLATFORM} = 32
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"		
 	${EndIf}
 	
     ${If} $MyriMatchInstalled == "1"
-		!if ${PLATFORM} == 64
-			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
-		!endif
-		
-		!if ${PLATFORM} == 32
-			${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"	
-		!endif
+	${AndIf} ${PLATFORM} = 64
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
 	${EndIf}
+		
+	${If} $MyriMatchInstalled == "1"
+	${AndIf} ${PLATFORM} = 32
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"	
+	${EndIf}	
     
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
@@ -717,7 +706,8 @@ Section "Uninstall"
     #  -- Proteowizard
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
     #  -- Searchengines
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA"
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA"	
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"	
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"	
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
@@ -808,6 +798,3 @@ FunctionEnd
 Function un.OnInstSuccess
    UAC::Unload ;Must call unload!
 FunctionEnd
-
-
-
