@@ -73,7 +73,7 @@ Name "OpenMS"
 RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Included files
-!include LogicLib.nsh
+
 !include MUI2.nsh
 !include Sections.nsh
 !include Library.nsh
@@ -84,6 +84,30 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 !include IncludeScript_FileLogging.nsh
 !include EnvVarUpdate.nsh
 !include x64.nsh
+!include LogicLib.nsh
+
+;FileExists is already part of LogicLib, but returns true for directories as well as files
+!macro _FileExists2 _a _b _t _f
+	!insertmacro _LOGICLIB_TEMP
+	StrCpy $_LOGICLIB_TEMP "0"
+	StrCmp `${_b}` `` +4 0 ;if path is not blank, continue to next check
+	IfFileExists `${_b}` `0` +3 ;if path exists, continue to next check (IfFileExists returns true if this is a directory)
+	IfFileExists `${_b}\*.*` +2 0 ;if path is not a directory, continue to confirm exists
+	StrCpy $_LOGICLIB_TEMP "1" ;file exists
+	;now we have a definitive value - the file exists or it does not
+	StrCmp $_LOGICLIB_TEMP "1" `${_t}` `${_f}`
+!macroend
+!undef FileExists
+!define FileExists `"" FileExists2`
+!macro _DirExists _a _b _t _f
+	!insertmacro _LOGICLIB_TEMP
+	StrCpy $_LOGICLIB_TEMP "0"	
+	StrCmp `${_b}` `` +3 0 ;if path is not blank, continue to next check
+	IfFileExists `${_b}\*.*` 0 +2 ;if directory exists, continue to confirm exists
+	StrCpy $_LOGICLIB_TEMP "1"
+	StrCmp $_LOGICLIB_TEMP "1" `${_t}` `${_f}`
+!macroend
+!define DirExists `"" DirExists`
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
@@ -316,37 +340,46 @@ Section "ThirdParty" SEC_ThirdParty
     SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY
     SetOverwrite on
     
-	## Third party libs (currently pwiz)
+	## Third party libs
     !if ${DEBUG_BUILD} == 0
-			!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin" ".svn\"
-			
-			${If} ${FileExists} ".\third_party\to_install\OMSSA\*.*"
-				!insertmacro InstallFolder ".\third_party\to_install\OMSSA" ".svn\"
+			!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
+						
+			## In LogicLib, a single equals  sign (=) is used as a comparative operator for integers, rather than the traditional double equals sign (==), which is only valid for string comparisons.
+			${If} ${PLATFORM} = 64
+			${AndIf} ${DirExists} ".\third_party\to_install\64bit\OMSSA"
+				!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
 				StrCpy $OMSSAInstalled "1"			
 			${EndIf}
 			
-			!insertmacro InstallFolder ".\third_party\to_install\OMSSA" ".svn\"
-			!if ${PLATFORM} == 64
-				${If} ${FileExists} ".\third_party\to_install\64bit\XTandem\*.*"
-					!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem" ".svn\"
-					StrCpy $XTandemInstalled "1"
-				${EndIf}				
-								
-				${If} ${FileExists} ".\third_party\to_install\64bit\MyriMatch\*.*"
-					!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch" ".svn\"
-					StrCpy $MyriMatchInstalled "1"	
-				${EndIf}					
-			!else
-				${If} ${FileExists} ".\third_party\to_install\32bit\XTandem\*.*"
-					!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem" ".svn\"
-					StrCpy $XTandemInstalled "1"
-				${EndIf}
+			${If} ${PLATFORM} = 64
+			${AndIf} ${DirExists} ".\third_party\to_install\64bit\XTandem"
+				!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
+				StrCpy $XTandemInstalled "1"
+			${EndIf}				
+			
+			${If} ${PLATFORM} = 64
+			${AndIf} ${DirExists} ".\third_party\to_install\64bit\MyriMatch"
+				!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
+				StrCpy $MyriMatchInstalled "1"	
+			${EndIf}				
 				
-				${If} ${FileExists} ".\third_party\to_install\32bit\MyriMatch\*.*"
-					!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch" ".svn\"
-					StrCpy $MyriMatchInstalled "1"
-				${EndIf}	
-			!endif
+			${If} ${PLATFORM} = 32
+			${AndIf} ${DirExists} ".\third_party\to_install\32bit\OMSSA"
+				!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
+				StrCpy $OMSSAInstalled "1"			
+			${EndIf}
+
+			${If} ${PLATFORM} = 32
+			${AndIf} ${DirExists} ".\third_party\to_install\32bit\XTandem"
+				!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
+				StrCpy $XTandemInstalled "1"
+			${EndIf}
+			
+			${If} ${PLATFORM} = 32
+			${AndIf} ${DirExists} ".\third_party\to_install\32bit\MyriMatch"
+				!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
+				StrCpy $MyriMatchInstalled "1"
+			${EndIf}	
     !endif    
 
 	## download .NET 3.5 (required by pwiz)
