@@ -44,6 +44,10 @@ Name "OpenMS"
 !ifndef VS_REDISTRIBUTABLE_EXE
 !include Cfg_Settings.nsh
 !endif
+
+# pwiz needs alternative VS runtime libraries
+!define VS_PWIZ_REDISTRIBUTABLE_EXE "vcredist2010_x86.exe"
+
 !ifndef PLATFORM
 !define PLATFORM 32
 !endif
@@ -361,6 +365,22 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			
 			net40_install_success:
 			## .NET 4.0 installed, yeah!
+			
+			## pwiz now requieres vs 2010 32bit (!) runtime libraries installed
+			SetOutPath $TEMP
+			SetOverwrite on
+
+			!insertmacro InstallFile  ${VS_PWIZ_REDISTRIBUTABLE_EXE}
+			ClearErrors
+			ExecWait '$TEMP\${VS_PWIZ_REDISTRIBUTABLE_EXE} /q' $0
+			StrCmp $0 0 vs_pwiz_install_success
+			MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_PWIZ_REDISTRIBUTABLE_EXE}' failed! Proteowizard will not work unless this package is installed! The package is located at '$TEMP\${VS_PWIZ_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
+				
+			## reasons why the install might fail:
+			## see doc\doxygen\install\install-win-bin.doxygen --> FAQ
+			
+			vs_pwiz_install_success:
+			
 			!insertmacro CloseUninstallLog
 		SectionEnd
 					
