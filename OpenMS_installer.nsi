@@ -316,73 +316,96 @@ Section "ThirdParty" SEC_ThirdParty
 
     SetOverwrite on
     
-	## Third party libs
-	CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
-	SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
-	!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
-				
-	!if ${PLATFORM} == 64
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
-		!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
-		StrCpy $OMSSAInstalled "1"	
-	!endif
-	
-	!if ${PLATFORM} == 64
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
-		!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
-		StrCpy $XTandemInstalled "1"
-	!endif				
-	
-	!if ${PLATFORM} == 64
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
-		!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
-		StrCpy $MyriMatchInstalled "1"	
-	!endif
+	!if ${DEBUG_BUILD} == 0
+		## Third party libs
+		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
+		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
+		!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
+					
+		!if ${PLATFORM} == 64
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
+			!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
+			StrCpy $OMSSAInstalled "1"	
+		!endif
 		
-	!if ${PLATFORM} == 32
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
-		!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
-		StrCpy $OMSSAInstalled "1"			
+		!if ${PLATFORM} == 64
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
+			!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
+			StrCpy $XTandemInstalled "1"
+		!endif				
+		
+		!if ${PLATFORM} == 64
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
+			!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
+			StrCpy $MyriMatchInstalled "1"	
+		!endif
+			
+		!if ${PLATFORM} == 32
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
+			!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
+			StrCpy $OMSSAInstalled "1"			
+		!endif
+
+		!if ${PLATFORM} == 32
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
+			!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
+			StrCpy $XTandemInstalled "1"
+		!endif
+		
+		!if ${PLATFORM} == 32
+			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
+			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
+			!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
+			StrCpy $MyriMatchInstalled "1"
+		!endif
 	!endif
 
-	!if ${PLATFORM} == 32
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
-		!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
-		StrCpy $XTandemInstalled "1"
-	!endif
-	
-	!if ${PLATFORM} == 32
-		CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
-		SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
-		!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
-		StrCpy $MyriMatchInstalled "1"
-	!endif
+	## download .NET 3.5 and 4.0 (required by pwiz)
+	MessageBox MB_YESNO "Proteowizard requires both .NET 3.5 SP1 and .NET 4.0 installed. The installer will now download 'Microsoft .NET 3.5 SP1'. \
+			   If you already have 'Microsoft .NET 3.5 SP1' installed you can skip this step. Do you wish to download it?" \
+			   IDNO net35_install_success
 
-	## download .NET 3.5 (required by pwiz)
-	MessageBox MB_YESNO "The installer will now download 'Microsoft .NET 3.5 SP1', which is required by Proteowizard. \
-			   If you already have 'Microsoft .NET 3.5 SP1' installed (.NET 4 is not enough!) you can skip this step. Do you wish to download it?" \
-			   IDNO net_install_success
-
-    inetc::get /BANNER "Getting .NET installer." \
+    inetc::get /BANNER "Getting .NET 3.5 SP1 installer." \
 			"http://www.microsoft.com/downloads/info.aspx?na=41&SrcFamilyId=AB99342F-5D1A-413D-8319-81DA479AB0D7&SrcDisplayLang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2f0%2f6%2f1%2f061F001C-8752-4600-A198-53214C69B51F%2fdotnetfx35setup.exe" \
 			"$EXEDIR\NET3.5_SP1_installer.exe"
 	Pop $0
-	StrCmp $0 "OK" dlok
+	StrCmp $0 "OK" dl35ok
 	MessageBox MB_OK|MB_ICONEXCLAMATION "Downloading 'Microsoft .NET 3.5 SP1' failed. You must download and install it manually in order for Proteowizard to work!"
 		
-	dlok:
+	dl35ok:
 	ClearErrors
     ExecWait '"$EXEDIR\NET3.5_SP1_installer.exe"' $0
-	StrCmp $0 0 net_install_success
+	StrCmp $0 0 net35_install_success
 	MessageBox MB_OK "The installation of the Microsoft .NET 3.5 SP1' package failed! You must download and install it manually in order for Proteowizard to work!"
 	
-	net_install_success:
+	net35_install_success:
 	## .NET 3.5 installed, yeah!
+
+	MessageBox MB_YESNO "The installer will now download 'Microsoft .NET 4.0', which is required by Proteowizard. \
+			   If you already have 'Microsoft .NET 4.0' installed you can skip this step. Do you wish to download it?" \
+			   IDNO net40_install_success
+
+    inetc::get /BANNER "Getting .NET 4.0 installer." \
+			"http://www.microsoft.com/downloads/info.aspx?na=41&SrcFamilyId=AB99342F-5D1A-413D-8319-81DA479AB0D7&SrcDisplayLang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2f9%2f5%2fA%2f95A9616B-7A37-4AF6-BC36-D6EA96C8DAAE%2fdotNetFx40_Full_x86_x64.exe" \
+			"$EXEDIR\NET4.0_installer.exe"
+			
+	Pop $0
+	StrCmp $0 "OK" dl40ok
+	MessageBox MB_OK|MB_ICONEXCLAMATION "Downloading 'Microsoft .NET 4.0' failed. You must download and install it manually in order for Proteowizard to work!"
+		
+	dl40ok:
+	ClearErrors
+    ExecWait '"$EXEDIR\NET4.0_installer.exe"' $0
+	StrCmp $0 0 net40_install_success
+	MessageBox MB_OK "The installation of the Microsoft .NET 4.0' package failed! You must download and install it manually in order for Proteowizard to work!"
+	
+	net40_install_success:
+	## .NET 4.0 installed, yeah!	
 	
     !insertmacro CloseUninstallLog
 SectionEnd
