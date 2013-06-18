@@ -248,7 +248,7 @@ Section "OpenMS Library" SEC_Lib
     !insertmacro OpenUninstallLog
 
     # install file (with logging)
-    !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_0.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_1.dll"
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS_GUI.dll"
