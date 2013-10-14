@@ -1,7 +1,12 @@
 This directory contains all files necessary to create a windows installer from a source build of OpenMS (System A)
 
 additional required software:
+
 - NSIS (NullSoft Installer System)
+  - version 3.xx has NOT been tested! If you want to try, please do and report results!
+  - download NSIS 2.46 from http://nsis.sourceforge.net
+  - copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
+    build into your NSIS install directory (this should overwrite makensis.exe and Stubs)
  
 
 Quick guide:
