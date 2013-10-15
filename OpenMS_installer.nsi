@@ -536,41 +536,57 @@ Section "-PathInst" SEC_PathRegister
     
     # OpenMS binary path
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\bin"
-    
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to $PATH environment. Add manually if required. See 'details' for details."
+	
     # Third Party library path
     #  -- Proteowizard
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin' to $PATH environment. Add manually if required. See 'details' for details."
 		
 	#  -- Search Engines
 	${If} $OMSSAInstalled == "1"
 	${AndIf} ${PLATFORM} = 64
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA"
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 
 	${If} $OMSSAInstalled == "1"
 	${AndIf} ${PLATFORM} = 32
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA"
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 
 	
 	${If} $XTandemInstalled == "1"
 	${AndIf} ${PLATFORM} = 64
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 
 	${If} $XTandemInstalled == "1"
 	${AndIf} ${PLATFORM} = 32
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"		
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 	
     ${If} $MyriMatchInstalled == "1"
 	${AndIf} ${PLATFORM} = 64
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 		
 	${If} $MyriMatchInstalled == "1"
 	${AndIf} ${PLATFORM} = 32
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"	
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}	
     
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
@@ -596,7 +612,7 @@ SectionGroup "Register File Extensions" SEC_RegisterExt
 SectionGroupEnd
 
 Section "-hidden VSRuntime"
-    # this requires admin priviliges (which we should have, due to UAC plugin)!
+    # this requires admin privileges (which we should have, due to UAC plug-in)!
     
     ## TODO (when bored)
 		#install the visual studio runtime
@@ -657,13 +673,13 @@ UAC_Err:
  
 UAC_ElevationAborted:
     # elevation was aborted, run as normal?
-    MessageBox mb_iconstop "This installer requires admin access, aborting!"
+    MessageBox mb_iconstop "This installer requires administrative rights, aborting!"
     Abort
  
 UAC_Success:
     StrCmp 1 $3 +4 ;Admin?
     StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
-    MessageBox mb_iconstop "This installer requires admin access, try again"
+    MessageBox mb_iconstop "This installer requires administrative rights, try again"
     goto UAC_Elevate 
  
 ## now our own code:
@@ -756,7 +772,7 @@ FunctionEnd
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_TOPP} "TOPP (The OpenMS Proteomics Pipeline) - chainable tools for data analysis"
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_Doc} "Documentation/Tutorials for TOPP, TOPPView and the OpenMS library itself."
 !insertmacro MUI_DESCRIPTION_TEXT ${SEC_ThirdParty} "Install third party libraries (e.g. ProteoWizard)."
-!insertmacro MUI_DESCRIPTION_TEXT ${SEC_RegisterExt} "Register certain file types (e.g. '.mzData') with TOPPView.exe"
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_RegisterExt} "Register certain file types (e.g. '.mzML') with TOPPView.exe"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ################
@@ -852,13 +868,13 @@ UAC_Err:
  
 UAC_ElevationAborted:
     # elevation was aborted, run as normal?
-    MessageBox mb_iconstop "This installer requires admin access, aborting!"
+    MessageBox mb_iconstop "This installer requires administrative rights, aborting!"
     Abort
  
 UAC_Success:
     StrCmp 1 $3 +4 ;Admin?
     StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
-    MessageBox mb_iconstop "This installer requires admin access, try again"
+    MessageBox mb_iconstop "This installer requires administrative rights, try again"
     goto UAC_Elevate 
 
 FunctionEnd
