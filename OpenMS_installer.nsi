@@ -1,21 +1,15 @@
 Name "OpenMS"
 
+############################################
+## see README before running this script! ##
+############################################
 ## useful resources:
 # http://abarinoff-dev.blogspot.com/2010/04/passing-parameters-and-retrieving.html
 # http://nsis.sourceforge.net/UAC_plug-in
 # http://nsis.sourceforge.net/Inetc_plug-in
-
+#
 ## using the UAC-plugin the installer is run in elevated mode my default (inner instance). If you want to
 ## do some user specific action (e.g. Start-Menu entries) you need to use the UAC's wrappers and calls
-
-##################
-###   TODO     ###
-##################
-### copy UAC.dll to your <PATH-to-NSIS>/Plugins directory before running the installer script!
-###   otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
-### extract the content of Inettc.zip to your <PATH-to-NSIS> directory before running the installer script!
-###   otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
-
 
 ##################
 ###   config   ###
@@ -28,7 +22,6 @@ Name "OpenMS"
 !define DEBUG_BUILD 0
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
 !define DEBUG_SKIP_DOCU 0
-
 
 
 ##################

@@ -7,7 +7,16 @@ additional required software:
   - download NSIS 2.46 from http://nsis.sourceforge.net
   - copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
     build into your NSIS install directory (this should overwrite makensis.exe and Stubs)
- 
+
+##################################################
+###   TODO before running OpenMS_installer.nsi ###
+##################################################
+### copy UAC.dll to your <PATH-to-NSIS>/Plugins directory before running the installer script!
+###   otherwise you'll get an error during script compilation: "Invalid command: UAC::RunElevated"
+### extract the content of Inettc.zip to your <PATH-to-NSIS> directory before running the installer script!
+###   otherwise you'll get an error during script compilation: "Invalid command: inetc::get"
+
+		
 
 Quick guide:
 - fully compile and test OpenMS using a Visual Studio Generator (create the targets [OpenMS TOPP UTILS GUI] - NOT MORE!!)
@@ -16,13 +25,13 @@ Quick guide:
 - read additional install information in the header of OpenMS_installer.nsi (!)
 - adapt settings in the header of OpenMS_installer.nsi to your needs
   or: see ./auto_package/*.nsi for example files, which you can just copy and modify.
-- compile OpenMS_installer.nsi using NSIS (this should create a file named OpenMS_setup.exe)
+- compile OpenMS_installer.nsi using NSIS (this should create a file named something like OpenMS_setup.exe)
 - distribute
 
 
 Verify the installer:
 - use a VM (System B)
-- do NOT assume that sucessfully installing OpenMS_setup.exe on the system A means that the installer will work
+- do NOT assume that successfully installing OpenMS_setup.exe on the system A means that the installer will work
   on a new system (B)! But you can at least check for major quirks.
 - check if all files were created and start-menu entries are present and working
 - to test the TOPP tools, run TOPPTest_Assembler.pl on System A
