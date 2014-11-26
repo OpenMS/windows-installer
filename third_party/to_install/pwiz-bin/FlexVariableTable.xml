@@ -32,6 +32,7 @@
       </type>
    </parameter>
    <parameter id="2">
+			<displayorder>1</displayorder>
       <name>Acquver</name>
       <displayname>AIDAVer</displayname>
       <description>AIDA version number</description>
@@ -272,7 +273,7 @@
       <name>DELAY</name>
       <displayname>Delay</displayname>
       <description>Spectrum delay</description>
-      <unit>pts</unit>
+      <unit>ns</unit>
       <group>Acquisition Detection</group>
       <spectrumtype value="MS"/>
       <spectrumtype value="FASTSeg"/>
@@ -305,8 +306,8 @@
    <parameter id="18">
       <name>DW</name>
       <displayname>SampleRate</displayname>
-      <description>SampleRate</description>
-      <unit>GS/s</unit>
+      <description>SampleRate reciprocal</description>
+      <unit>ns</unit>
       <group>Acquisition Detection</group>
       <spectrumtype value="MS"/>
       <spectrumtype value="FASTSeg"/>
@@ -317,7 +318,7 @@
          <dimension>0</dimension>
          <default>8.000000E-02 </default>
       </type>
-      <displayorder>4</displayorder>
+      <displayorder>5</displayorder>
    </parameter>
    <parameter id="19">
       <name>FAMeth</name>
@@ -424,7 +425,7 @@
          <dimension>0</dimension>
          <default/>
       </type>
-      <displayorder>2</displayorder>
+      <displayorder>3</displayorder>
    </parameter>
    <parameter id="26">
       <name>IDref</name>
@@ -456,7 +457,7 @@
          <dimension>0</dimension>
          <default>- </default>
       </type>
-      <displayorder>8</displayorder>
+      <displayorder>9</displayorder>
    </parameter>
    <parameter id="28">
       <name>INSTRUM</name>
@@ -500,7 +501,7 @@
          <value>microflex</value>
          <value>MT10</value>
       </type>
-      <displayorder>9</displayorder>
+      <displayorder>10</displayorder>
    </parameter>
    <parameter id="30">
       <name>Mctrlst</name>
@@ -622,7 +623,7 @@
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
       <spectrumtype value="LIFT"/>
-      <displayorder>12</displayorder>
+      <displayorder>13</displayorder>
    </parameter>
    <parameter id="38">
       <name>Parent</name>
@@ -669,7 +670,7 @@
          <dimension>0</dimension>
          <default>/export/home/data </default>
       </type>
-      <displayorder>3</displayorder>
+      <displayorder>4</displayorder>
    </parameter>
    <parameter id="41">
       <name>PEPURL</name>
@@ -743,7 +744,10 @@
          <dimension>1</dimension>
          <default>(0..15) 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 </default>
       </type>
-      <spectrumtype value="MS"/>
+     <spectrumtype value="MS"/>
+     <spectrumtype value="FASTSeg"/>
+     <spectrumtype value="FAST"/>
+     <spectrumtype value="LIFT"/>
    </parameter>
    <parameter id="47">
       <name>SMPNAM</name>
@@ -759,7 +763,7 @@
          <dimension>0</dimension>
          <default>TOFSample </default>
       </type>
-      <displayorder>4</displayorder>
+      <displayorder>5</displayorder>
    </parameter>
    <parameter id="48">
       <name>SNPMETH</name>
@@ -810,7 +814,7 @@
          <dimension>0</dimension>
          <default>8192 </default>
       </type>
-      <displayorder>5</displayorder>
+      <displayorder>6</displayorder>
    </parameter>
    <parameter id="52">
       <name>TgCount</name>
@@ -890,7 +894,7 @@
          <dimension>0</dimension>
          <default>none </default>
       </type>
-      <displayorder>5</displayorder>
+      <displayorder>6</displayorder>
    </parameter>
    <parameter id="57">
       <name>AXMeth</name>
@@ -1076,7 +1080,7 @@
          <dimension>0</dimension>
          <default>2.2</default>
       </type>
-      <displayorder>7</displayorder>
+      <displayorder>8</displayorder>
    </parameter>
    <parameter id="69">
       <name>FAVer</name>
@@ -1093,7 +1097,7 @@
          <dimension>0</dimension>
          <default>2.2</default>
       </type>
-      <displayorder>1</displayorder>
+      <displayorder>2</displayorder>
    </parameter>
    <parameter id="70">
       <name>BufType</name>
@@ -1126,8 +1130,8 @@
    </parameter>
    <parameter id="73">
       <name>Aoffs</name>
-      <displayname>Analog Offset</displayname>
-      <description>Analog Offset</description>
+      <displayname>Analog Offsets</displayname>
+      <description>Analog Offsets</description>
       <unit>mV</unit>
       <group>Acquisition Setup</group>
       <spectrumtype value="MS"/>
@@ -1139,7 +1143,6 @@
          <dimension>1</dimension>
          <default>(0..5) 0  0  0  0  0  0 </default>
       </type>
-      <displayorder>1</displayorder>
    </parameter>
    <parameter id="74">
       <name>Doffs</name>
@@ -1162,7 +1165,7 @@
       <displayname>Electronic Gain</displayname>
       <description>Sensitivity of digitizer</description>
       <unit>mV/fullscale</unit>
-      <group>Acquisition Detection</group>
+      <group>Acquisition Setup</group>
       <spectrumtype value="MS"/>
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
@@ -1172,7 +1175,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>2</displayorder>
+      <displayorder>3</displayorder>
    </parameter>
    <parameter id="76">
       <name>DIGTYP</name>
@@ -1200,8 +1203,15 @@
          <value>Acqiris Unknown subtype</value>
          <value>Gage</value>
          <value>Simulator</value>
+         <value>Lecroy WaveRunner</value>
+         <value>Acqiris U1084A</value>
+         <value>NI 5154</value>
+         <value>LeCroy LSA2000</value>
+         <value>Acqiris DP1400</value>
+         <value>NI 5155</value>
+         <value>Bruker BD0G5</value>
       </type>
-      <displayorder>6</displayorder>
+      <displayorder>7</displayorder>
    </parameter>
    <parameter id="77">
       <name>Masserr</name>
@@ -1214,7 +1224,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>6</displayorder>
+      <displayorder>7</displayorder>
    </parameter>
    <parameter id="1001">
       <name>Acalm</name>
@@ -1281,7 +1291,7 @@
    <parameter id="1005">
       <name>ATTEN</name>
       <displayname>LasAtten</displayname>
-      <description>Laser beam attenuation</description>
+      <description>LaserPower = 100% - Laser beam attenuation</description>
       <group>Acquisition Misc</group>
       <type>
          <basetype>double</basetype>
@@ -1292,7 +1302,7 @@
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
       <spectrumtype value="LIFT"/>
-      <displayorder>10</displayorder>
+      <displayorder>11</displayorder>
    </parameter>
    <parameter id="1006">
       <name>LasFoc</name>
@@ -1308,7 +1318,7 @@
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
       <spectrumtype value="LIFT"/>
-      <displayorder>3</displayorder>
+      <displayorder>4</displayorder>
    </parameter>
    <parameter id="1008">
       <name>Calmet</name>
@@ -1322,6 +1332,10 @@
          <value>cal2</value>
          <value>cal3</value>
       </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
    </parameter>
    <parameter id="1009">
       <name>CLDATE</name>
@@ -1368,6 +1382,7 @@
          <dimension>0</dimension>
          <default>unknown </default>
       </type>
+      <displayorder>5</displayorder>      
    </parameter>
    <parameter id="1012">
       <name>CLSTAT</name>
@@ -1420,7 +1435,6 @@
          <value>false</value>
          <value>true</value>
       </type>
-      <displayorder>1</displayorder>
    </parameter>
    <parameter id="1017">
       <name>DPCAL1</name>
@@ -1436,7 +1450,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>3</displayorder>
+      <displayorder>1</displayorder>
    </parameter>
    <parameter id="1018">
       <name>DPMASS</name>
@@ -1450,7 +1464,6 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>2</displayorder>
    </parameter>
    <parameter id="1020">
       <name>FASTON</name>
@@ -1599,7 +1612,7 @@
          <value>false</value>
          <value>true</value>
       </type>
-      <displayorder>3</displayorder>
+      <displayorder>2</displayorder>
    </parameter>
    <parameter id="1033">
       <name>HPCal</name>
@@ -1686,7 +1699,7 @@
          <value>false</value>
          <value>true</value>
       </type>
-      <displayorder>5</displayorder>
+      <displayorder>6</displayorder>
    </parameter>
    <parameter id="1042">
       <name>ISD</name>
@@ -1804,7 +1817,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>9</displayorder>
+      <displayorder>11</displayorder>
    </parameter>
    <parameter id="1054">
       <name>Lift2</name>
@@ -1818,7 +1831,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>10</displayorder>
+      <displayorder>12</displayorder>
    </parameter>
    <parameter id="1056">
       <name>ML1_raw</name>
@@ -1936,7 +1949,7 @@
          <dimension>0</dimension>
          <default>10 </default>
       </type>
-      <displayorder>11</displayorder>
+      <displayorder>12</displayorder>
    </parameter>
    <parameter id="1064">
       <name>OCPOrd</name>
@@ -1977,7 +1990,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>4</displayorder>
+      <displayorder>5</displayorder>
    </parameter>
    <parameter id="1068">
       <name>PLMSC</name>
@@ -2007,7 +2020,7 @@
          <value>NEG</value>
          <value>POS</value>
       </type>
-      <displayorder>5</displayorder>
+      <displayorder>6</displayorder>
    </parameter>
    <parameter id="1070">
       <name>PROCNO</name>
@@ -2085,14 +2098,15 @@
    </parameter>
    <parameter id="1078">
       <name>REFLIST</name>
-      <displayname>REFLIST</displayname>
-      <description>Calibration reference list used</description>
-      <group>Acquisition Misc</group>
+      <displayname>MCList</displayname>
+      <description>Calibration mass control list used</description>
+      <group>Processing Calibration</group>
       <type>
          <basetype>string</basetype>
          <dimension>0</dimension>
          <default>none </default>
       </type>
+      <displayorder>8</displayorder>
       <spectrumtype value="MS"/>
    </parameter>
    <parameter id="1079">
@@ -2100,7 +2114,7 @@
       <displayname>RepRate</displayname>
       <description>Laser repetition rate</description>
       <unit>Hz</unit>
-      <group>Acquisition Setup</group>
+      <group>Acquisition Detection</group>
       <spectrumtype value="MS"/>
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
@@ -2142,7 +2156,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>12</displayorder>
+      <displayorder>14</displayorder>
    </parameter>
    <parameter id="1083">
       <name>RefFull</name>
@@ -2297,7 +2311,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>7</displayorder>
+      <displayorder>8</displayorder>
    </parameter>
    <parameter id="1100">
       <name>UdetR</name>
@@ -2314,7 +2328,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>8</displayorder>
+      <displayorder>9</displayorder>
    </parameter>
    <parameter id="1101">
       <name>Uhimass</name>
@@ -2331,7 +2345,7 @@
          <dimension>0</dimension>
          <default>0.00000000000000000E+00 </default>
       </type>
-      <displayorder>6</displayorder>
+      <displayorder>7</displayorder>
    </parameter>
    <parameter id="1102">
       <name>Uis1</name>
@@ -2348,7 +2362,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>6</displayorder>
+      <displayorder>8</displayorder>
    </parameter>
    <parameter id="1103">
       <name>Uis2</name>
@@ -2365,7 +2379,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>7</displayorder>
+      <displayorder>9</displayorder>
    </parameter>
    <parameter id="1104">
       <name>Ulens</name>
@@ -2382,7 +2396,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>8</displayorder>
+      <displayorder>10</displayorder>
    </parameter>
    <parameter id="1105">
       <name>Urefl</name>
@@ -2399,7 +2413,7 @@
          <dimension>0</dimension>
          <default>0.000000E+00 </default>
       </type>
-      <displayorder>11</displayorder>
+      <displayorder>12</displayorder>
    </parameter>
    <parameter id="1107">
       <name>WEND</name>
@@ -2472,5 +2486,222 @@
       <spectrumtype value="FASTSeg"/>
       <spectrumtype value="FAST"/>
       <spectrumtype value="LIFT"/>
+   </parameter>
+   <parameter id="1114">
+      <name>GatStr</name>
+      <displayname>Gating strength</displayname>
+      <description>Gating strength</description>
+      <group>Acquisition Spectrometer</group>
+      <type>
+         <basetype>enum</basetype>
+         <dimension>0</dimension>
+         <default>0 (ord) resp. general </default>
+         <value>off</value>
+         <value>low</value>
+         <value>medium</value>
+         <value>high</value>
+         <value>highest</value>
+      <displayorder>2</displayorder>         
+      </type>
+      <spectrumtype value="MS"/>
+   </parameter>
+   <parameter id="1115">
+      <name>GatDly</name>
+      <displayname>Gating delay</displayname>
+      <description>Gating delay</description>
+      <unit>ns</unit>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>double</basetype>
+         <dimension>0</dimension>
+         <default/>
+      </type>
+      <spectrumtype value="MS"/>
+   </parameter>
+   <parameter id="1116">
+      <name>DefDly</name>
+      <displayname>Deflection delay</displayname>
+      <description>Deflection delay</description>
+      <unit>ns</unit>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>double</basetype>
+         <dimension>0</dimension>
+         <default/>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+   </parameter>
+   <parameter id="1117">
+      <name>RTSmoo</name>
+      <displayname>Realtime smooth</displayname>
+      <description>Realtime smooth</description>
+      <group>Acquisition Detection</group>
+      <type>
+         <basetype>enum</basetype>
+         <dimension>0</dimension>
+         <default>0 (ord) resp. off </default>
+         <value>off</value>
+         <value>low</value>
+         <value>medium</value>
+         <value>high</value>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <displayorder>3</displayorder>
+   </parameter>
+   <parameter id="1118">
+      <name>IsCalib</name>
+      <displayname>IsCalibrant</displayname>
+      <description>Shows whether the spectrum is a calibrant</description>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>enum</basetype>
+         <dimension>0</dimension>
+         <default>0 (ord) resp. false </default>
+         <value>false</value>
+         <value>true</value>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+   </parameter>
+   <parameter id="1119">
+      <name>Realign</name>
+      <displayname>Realigned</displayname>
+      <description>Shows whether a spectrum is realigned</description>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>enum</basetype>
+         <dimension>0</dimension>
+         <default>0 (ord) resp. false </default>
+         <value>no_realign</value>
+         <value>realign</value>
+         <value>excl_noise_spec</value>
+         <value>excl_no_peak_match</value>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+   </parameter>
+      <parameter id="1120">
+      <name>RetTime</name>
+      <displayname>Retention time</displayname>
+      <description>Retention time for Warp-LC</description>
+      <unit>s</unit>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>double</basetype>
+         <dimension>0</dimension>
+         <default>0.000000E+00 </default>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <displayorder>14</displayorder>
+   </parameter>
+   <parameter id="1121">
+      <name>AOfs</name>
+      <displayname>Analog Offset</displayname>
+      <description>Analog Offset</description>
+      <unit>mV</unit>
+      <group>Acquisition Setup</group>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <type>
+         <basetype>double</basetype>
+         <dimension>0</dimension>
+         <default>0.000000E+00 </default>
+      </type>
+      <displayorder>1</displayorder>
+   </parameter>
+   <parameter id="1122">
+      <name>CalStar</name>
+      <displayname>Raw Calibration Status</displayname>
+      <description>Raw Calibration Status</description>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>string</basetype>
+         <dimension>0</dimension>
+         <default/>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+   </parameter>
+   <parameter id="1123">
+      <name>CalStat</name>
+      <displayname>Calibration Status</displayname>
+      <description>Calibration Status</description>
+      <group>Acquisition Misc</group>
+      <type>
+         <basetype>string</basetype>
+         <dimension>0</dimension>
+         <default/>
+      </type>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+   </parameter>
+   <parameter id="1124">
+      <name>MatSup</name>
+      <displayname>Matrix suppression</displayname>
+      <description>Matrix suppression mode</description>
+      <group>Acquisition Spectrometer</group>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <type>
+         <basetype>enum</basetype>
+         <dimension>0</dimension>
+         <default>0 (ord) resp. off </default>
+         <value>off</value>
+         <value>deflection</value>
+         <value>gating</value>
+      </type>
+      <displayorder>3</displayorder>
+   </parameter>
+   <parameter id="1125">
+      <name>MSupMz</name>
+      <displayname>Matrix suppression mass</displayname>
+      <description>Matrix suppression cut off mass</description>
+      <group>Acquisition Spectrometer</group>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <type>
+         <basetype>double</basetype>
+         <dimension>0</dimension>
+         <default>0.000000E+00 </default>
+      </type>
+      <displayorder>4</displayorder>
+   </parameter>
+   <parameter id="1126">
+      <name>DigDep</name>
+      <displayname>Digitizer bit depth</displayname>
+      <description>Digitizer bit depth</description>
+      <group>Acquisition Misc</group>
+      <spectrumtype value="MS"/>
+      <spectrumtype value="FASTSeg"/>
+      <spectrumtype value="FAST"/>
+      <spectrumtype value="LIFT"/>
+      <type>
+         <basetype>int</basetype>
+         <dimension>0</dimension>
+         <default>8 </default>
+      </type>
+      <displayorder>6</displayorder>
    </parameter>
 </xmass>
