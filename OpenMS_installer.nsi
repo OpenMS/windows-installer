@@ -108,6 +108,8 @@ Var StartMenuGroup
 Var OMSSAInstalled
 Var XTandemInstalled
 Var MyriMatchInstalled
+Var MSGFPlusInstalled
+Var FidoInstalled
 
 # MUI defines
 #!define MUI_ICON OpenMS.ico
@@ -431,6 +433,19 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			SectionEnd
 		!endif
 
+		!if ${PLATFORM} == 64
+			Section "Fido (64bit)"
+				SectionIn 1 3
+				!insertmacro OpenUninstallLog
+				SetOverwrite on							
+				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido
+				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido
+				!insertmacro InstallFolder ".\third_party\to_install\64bit\Fido\*.*" ".svn\"
+				StrCpy $FidoInstalled "1"
+				!insertmacro CloseUninstallLog
+			SectionEnd
+		!endif
+
 		!if ${PLATFORM} == 32
 			Section "OMSSA and makeblastdb(32bit)"
 				SectionIn 1 3
@@ -479,6 +494,19 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus
 				!insertmacro InstallFolder ".\third_party\to_install\32bit\MSGFPlus\*.*" ".svn\"
 				StrCpy $MSGFPlusInstalled "1"
+				!insertmacro CloseUninstallLog
+			SectionEnd
+		!endif
+
+		!if ${PLATFORM} == 32
+			Section "Fido (32bit)"
+				SectionIn 1 3
+				!insertmacro OpenUninstallLog
+				SetOverwrite on							
+				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido
+				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido
+				!insertmacro InstallFolder ".\third_party\to_install\32bit\Fido\*.*" ".svn\"
+				StrCpy $FidoInstalled "1"
 				!insertmacro CloseUninstallLog
 			SectionEnd
 		!endif
@@ -617,18 +645,33 @@ Section "-PathInst" SEC_PathRegister
 	${EndIf}	
     
     ${If} $MSGFPlusInstalled == "1"
+	${AndIf} ${PLATFORM} = 32
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus"	
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus' to $PATH environment. Add manually if required. See 'details' for details."
+	${EndIf}
+
+    ${If} $MSGFPlusInstalled == "1"
 	${AndIf} ${PLATFORM} = 64
 		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus"	
     IfErrors 0 +2
 			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus' to $PATH environment. Add manually if required. See 'details' for details."
 	${EndIf}
 		
-	${If} $MyriMatchInstalled == "1"
+    ${If} $FidoInstalled == "1"
 	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus"	
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido"	
     IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}	
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido' to $PATH environment. Add manually if required. See 'details' for details."
+	${EndIf}
+
+    ${If} $FidoInstalled == "1"
+	${AndIf} ${PLATFORM} = 64
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido"	
+    IfErrors 0 +2
+			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido' to $PATH environment. Add manually if required. See 'details' for details."
+	${EndIf}
+
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
     WriteRegExpandStr ${env_hklm} "OPENMS_DATA_PATH" "$INSTDIR\share\OpenMS"
@@ -843,6 +886,8 @@ Section "Uninstall"
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus"	
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus"
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido"	
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido"
 	    
     ## remove OPENMS_DATA_PATH
     ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
