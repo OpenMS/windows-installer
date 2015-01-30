@@ -247,7 +247,8 @@ Section "OpenMS Library" SEC_Lib
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS_GUI.dll"
-	!insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenSwathAlgo.dll"
+    !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenSwathAlgo.dll"
+    !insertmacro InstallFile "${OPENMSDIR}\bin\Release\SuperHirn.dll"
     
     !if ${DEBUG_BUILD} == 0 
         !insertmacro InstallFile "${QTLIBDIR}\QtCore4.dll"
