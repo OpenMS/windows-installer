@@ -85,7 +85,8 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
-ReserveFile "${NSISDIR}\Plugins\AdvSplash.dll"
+# Modify the next line to adapt to the plugin for other NSIS versions (currently 3.0b1)
+ReserveFile "${NSISDIR}\Plugins\x86-unicode\advsplash.dll"
 
 ;--------------------------------
 ;Interface Configuration
