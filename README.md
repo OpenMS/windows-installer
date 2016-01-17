@@ -7,9 +7,9 @@ Additional required software:
 -------------
 
 - NSIS (NullSoft Installer System)
-  - version 3.xx has NOT been tested! If you want to try, please do and report results!
-  - download NSIS 2.46 from http://nsis.sourceforge.net
-  - copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
+  - has been tested up to 3.0b2 from http://nsis.sourceforge.net. It seems to stop working in 3.0b3.
+  - to work with NSIS 2.x, you need to remove a subfolder on line 91 in the OpenMS_installer.nsi
+  - you might need to copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
     build into your NSIS install directory (this should overwrite makensis.exe and Stubs)
 
 
@@ -23,7 +23,7 @@ Quick guide
 -------------
 
  1. Fully compile and test OpenMS using a Visual Studio Generator (create the targets [```OpenMS``` ```TOPP``` ```UTILS``` ```GUI```] - NOT MORE!!)
- 1. create the documentation (target "doc" (NOT doc_internal) in ```OpenMS_build/doc```) **OR** copy the doc folder from Linux if setting up documentation on Windows is too hard or not possible.
+ 1. create the documentation (targets "doc" and "doc_tutorial" (NOT doc_internal) in ```OpenMS_build/doc```) **OR** copy the doc folder from Linux if setting up documentation on Windows is too hard or not possible.
  1. Read additional install information in the header of OpenMS_installer.nsi (!)
  1. Adapt relevant settings in the header of OpenMS_installer.nsi to your needs **OR** see ```./auto_package/*.nsi ``` for example files, which you can just copy and modify.
  1. Compile ```OpenMS_installer.nsi``` using NSIS (this should create a file named something like ```OpenMS_setup.exe```)
