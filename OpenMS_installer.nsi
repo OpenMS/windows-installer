@@ -85,7 +85,9 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
-# Modify the next line to adapt to the plugin for other NSIS versions (currently 3.0b1)
+# Modify the next line to adapt to the plugin for other NSIS versions (currently 3.0b2)
+# NSIS 2.x does not have the subfolders x86-unicode or x86-ansi, so remove them.
+# The next line was tested on 3.0b1 and 3.0b2 and does not seem to work in 3.0b3
 ReserveFile "${NSISDIR}\Plugins\x86-unicode\advsplash.dll"
 
 ;--------------------------------
