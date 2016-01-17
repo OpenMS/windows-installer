@@ -24,4 +24,4 @@
 
 ## actual installer:
 
-!include C:\dev\windows-installer\OpenMS_installer.nsi
+!include @git_wininstaller_rootdir@OpenMS_installer.nsi
