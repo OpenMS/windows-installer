@@ -21,8 +21,10 @@ Name "OpenMS"
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
 !define DEBUG_BUILD 0
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
-!define DEBUG_SKIP_DOCU 0
+!define DEBUG_SKIP_DOCU 1
 
+# marks a section as off. Already defined in an include
+##!define SECTION_OFF 0xFFFFFFFE
 
 ##################
 ###   SCRIPT   ###
@@ -43,6 +45,11 @@ Name "OpenMS"
 
 !ifndef PLATFORM
 !define PLATFORM 32
+!endif
+
+!ifndef THIRDPARTYDIR
+!warning "Variable THIRDPARTYDIR not set. Will deactivate installation of Thirdparty binaries."
+!insertmacro SetSectionFlag ${SEC_ThirdParty} ${SECTION_OFF} 
 !endif
 
 # which extensions to connect to TOPPView and TOPPAS
@@ -108,11 +115,7 @@ ReserveFile "${NSISDIR}\Plugins\x86-unicode\advsplash.dll"
 
 # Variables
 Var StartMenuGroup
-Var OMSSAInstalled
-Var XTandemInstalled
-Var MyriMatchInstalled
-Var MSGFPlusInstalled
-Var FidoInstalled
+Var ThirdpartyInstalled
 
 # MUI defines
 #!define MUI_ICON OpenMS.ico
@@ -312,7 +315,6 @@ Section "Documentation" SEC_Doc
     !insertmacro CloseUninstallLog
 SectionEnd
 
-## install everything in Thirdparty folder THIRDPARTYDIR
 ## Third party libs
 SectionGroup "ThirdParty" SEC_ThirdParty   
 	!if ${DEBUG_BUILD} == 0
@@ -320,9 +322,9 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 		    SectionIn 1 3
 			!insertmacro OpenUninstallLog
 			SetOverwrite on
-			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
-			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
-			!insertmacro InstallFolder "${THIRDPARTYDIR}\${PLATFORM}bit\pwiz-bin\*.*" ""
+			CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\"
+			SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\"
+			!insertmacro InstallFolder "${THIRDPARTY_ROOT}\pwiz-bin\*.*" ""
 
 			## download .NET 3.5 and 4.0 (required by pwiz)
 			MessageBox MB_YESNO "Proteowizard requires both .NET 3.5 SP1 and .NET 4.0 installed. The installer will now download 'Microsoft .NET 3.5 SP1'. \
@@ -366,7 +368,7 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			net40_install_success:
 			## .NET 4.0 installed, yeah!
 			
-			## pwiz now requieres vs 2010 32bit (!) runtime libraries installed
+			## pwiz now requires vs 2010 32bit (!) runtime libraries installed
 			SetOutPath $TEMP
 			SetOverwrite on
 
@@ -383,137 +385,48 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			
 			!insertmacro CloseUninstallLog
 		SectionEnd
-					
-		!if ${PLATFORM} == 64
-			Section "OMSSA and makeblastdb (64bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on			
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\OMSSA\*.*" ".svn\"
-				StrCpy $OMSSAInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-		
-		!if ${PLATFORM} == 64
-			Section "X!Tandem (64bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on						
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\XTandem\*.*" ".svn\"
-				StrCpy $XTandemInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif				
-		
-		!if ${PLATFORM} == 64
-			Section "MyriMatch (64bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\MyriMatch\*.*" ".svn\"
-				StrCpy $MyriMatchInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
+    
+    Section "Searchengines" SEC_Searchengines
+			SectionIn 1 3
 
-			
-		!if ${PLATFORM} == 64
-			Section "MSGFPlus (64bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\MSGFPlus\*.*" ".svn\"
-				StrCpy $MSGFPlusInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-
-		!if ${PLATFORM} == 64
-			Section "Fido (64bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido
-				!insertmacro InstallFolder ".\third_party\to_install\64bit\Fido\*.*" ".svn\"
-				StrCpy $FidoInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-
-		!if ${PLATFORM} == 32
-			Section "OMSSA and makeblastdb(32bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\OMSSA\*.*" ".svn\"
-				StrCpy $OMSSAInstalled "1"
-				!insertmacro CloseUninstallLog				
-			SectionEnd
-		!endif
-
-		!if ${PLATFORM} == 32
-			Section "X!Tandem (32bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\XTandem\*.*" ".svn\"
-				StrCpy $XTandemInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-		
-		!if ${PLATFORM} == 32
-			Section "MyriMatch (32bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\MyriMatch\*.*" ".svn\"
-				StrCpy $MyriMatchInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-
-		!if ${PLATFORM} == 32
-			Section "MSGFPlus (32bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\MSGFPlus\*.*" ".svn\"
-				StrCpy $MSGFPlusInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
-
-		!if ${PLATFORM} == 32
-			Section "Fido (32bit)"
-				SectionIn 1 3
-				!insertmacro OpenUninstallLog
-				SetOverwrite on							
-				CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido
-				SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido
-				!insertmacro InstallFolder ".\third_party\to_install\32bit\Fido\*.*" ".svn\"
-				StrCpy $FidoInstalled "1"
-				!insertmacro CloseUninstallLog
-			SectionEnd
-		!endif
+      
+      ## Install everything platform specific
+      FindFirst $0 $1 "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\*.*"
+      loop:
+      StrCmp $1 "" done
+      ${If} ${FileExists} "$1\*.*"
+        !insertmacro OpenUninstallLog
+        SetOverwrite on
+        CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+        SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+        !insertmacro InstallFolder "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\$1\*.*" ""
+        !insertmacro CloseUninstallLog
+      ${EndIf}
+      FindNext $0 $1
+      Goto loop
+      done:
+      FindClose $0
+      
+      ## Install everything platform independent
+      FindFirst $0 $1 "${THIRDPARTYDIR}\All\*.*"
+      loop:
+      StrCmp $1 "" done
+      ${If} ${FileExists} "$1\*.*"
+        !insertmacro OpenUninstallLog
+        SetOverwrite on
+        CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+        SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+        !insertmacro InstallFolder "${THIRDPARTYDIR}\All\$1\*.*" ""
+        !insertmacro CloseUninstallLog
+      ${EndIf}
+      FindNext $0 $1
+      Goto loop
+      done:
+      FindClose $0
+      
+      StrCpy $ThirdpartyInstalled "1"
+      !insertmacro CloseUninstallLog
+    SectionEnd
 	!endif
 	
 
@@ -598,83 +511,19 @@ Section "-PathInst" SEC_PathRegister
     IfErrors 0 +2
 			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to $PATH environment. Add manually if required. See 'details' for details."
 	
-    # Third Party library path
-    #  -- Proteowizard
-    ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin' to $PATH environment. Add manually if required. See 'details' for details."
-		
-	#  -- Search Engines
-	${If} $OMSSAInstalled == "1"
-	${AndIf} ${PLATFORM} = 64
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA"
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-
-	${If} $OMSSAInstalled == "1"
-	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA"
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-
-	
-	${If} $XTandemInstalled == "1"
-	${AndIf} ${PLATFORM} = 64
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-
-	${If} $XTandemInstalled == "1"
-	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"		
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-	
-    ${If} $MyriMatchInstalled == "1"
-	${AndIf} ${PLATFORM} = 64
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-		
-	${If} $MyriMatchInstalled == "1"
-	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}	
-    
-    ${If} $MSGFPlusInstalled == "1"
-	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-
-    ${If} $MSGFPlusInstalled == "1"
-	${AndIf} ${PLATFORM} = 64
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-		
-    ${If} $FidoInstalled == "1"
-	${AndIf} ${PLATFORM} = 32
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
-
-    ${If} $FidoInstalled == "1"
-	${AndIf} ${PLATFORM} = 64
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido"	
-    IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido' to $PATH environment. Add manually if required. See 'details' for details."
-	${EndIf}
+    # Third Party library paths
+    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    loop:
+    StrCmp $1 "" done
+    ${If} ${FileExists} "$1\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\$1' to $PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}
+    FindNext $0 $1
+    Goto loop
+    done:
+    FindClose $0
 
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
@@ -878,21 +727,18 @@ Section "Uninstall"
     # OpenMS binary path
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\bin"
     
-    # Third Party library path
-    #  -- Proteowizard
-    ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-    #  -- Searchengines
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\OMSSA"
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\OMSSA"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\XTandem"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\XTandem"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MyriMatch"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MyriMatch"
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\MSGFPlus"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\MSGFPlus"
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\64bit\Fido"	
-	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\32bit\Fido"
-	    
+    # Third Party library paths
+    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    loop:
+    StrCmp $1 "" done
+    ${If} ${FileExists} "$1\*.*"
+      ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    ${EndIf}
+    FindNext $0 $1
+    Goto loop
+    done:
+    FindClose $0
+
     ## remove OPENMS_DATA_PATH
     ${un.EnvVarUpdate} $0 "OPENMS_DATA_PATH" "R" "HKLM" "$INSTDIR\share\OpenMS"
 
