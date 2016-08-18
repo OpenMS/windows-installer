@@ -312,7 +312,7 @@ Section "Documentation" SEC_Doc
     !insertmacro CloseUninstallLog
 SectionEnd
 
-## install everything in <win_installer>\third_party\to_install\*
+## install everything in Thirdparty folder THIRDPARTYDIR
 ## Third party libs
 SectionGroup "ThirdParty" SEC_ThirdParty   
 	!if ${DEBUG_BUILD} == 0
@@ -322,7 +322,7 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			SetOverwrite on
 			CreateDirectory $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
 			SetOutPath $INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin
-			!insertmacro InstallFolder ".\third_party\to_install\pwiz-bin\*.*" ".svn\"
+			!insertmacro InstallFolder "${THIRDPARTYDIR}\${PLATFORM}bit\pwiz-bin\*.*" ""
 
 			## download .NET 3.5 and 4.0 (required by pwiz)
 			MessageBox MB_YESNO "Proteowizard requires both .NET 3.5 SP1 and .NET 4.0 installed. The installer will now download 'Microsoft .NET 3.5 SP1'. \
