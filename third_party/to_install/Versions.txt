@@ -1,6 +1,0 @@
-Listing the Third-Party library versions installed in this folder.
-
-ProteoWizard (http://proteowizard.sourceforge.net/): 3.0.6938
-X!Tandem Sledgehammer
-MS-GF+ Beta (v10089) (7/16/2014)
-OMSSA 1.9
