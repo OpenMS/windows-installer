@@ -21,7 +21,7 @@ Name "OpenMS"
 # set to "0" for deployment!!! use "1" to build the executable fast (for script debugging) 
 !define DEBUG_BUILD 0
 # set to "0" for deployment!!! use "1" to skip packaging of *.html files (takes ages)
-!define DEBUG_SKIP_DOCU 1
+!define DEBUG_SKIP_DOCU 0
 
 # marks a section as off. Already defined in an include
 ##!define SECTION_OFF 0xFFFFFFFE
@@ -49,7 +49,8 @@ Name "OpenMS"
 
 !ifndef THIRDPARTYDIR
 !warning "Variable THIRDPARTYDIR not set. Will deactivate installation of Thirdparty binaries."
-!insertmacro SetSectionFlag ${SEC_ThirdParty} ${SECTION_OFF} 
+## TODO SetSectionFlag not defined??
+##!insertmacro SetSectionFlag ${SEC_ThirdParty} ${SECTION_OFF} 
 !endif
 
 # which extensions to connect to TOPPView and TOPPAS
@@ -115,7 +116,6 @@ ReserveFile "${NSISDIR}\Plugins\x86-unicode\advsplash.dll"
 
 # Variables
 Var StartMenuGroup
-Var ThirdpartyInstalled
 
 # MUI defines
 #!define MUI_ICON OpenMS.ico
@@ -200,7 +200,7 @@ Function CreateSMGroupShortcut
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     StrCpy $OUTDIR "$INSTDIR"       # execute link target in $OUTDIR
     
-    CreateDirectory "$SMPrograms\${APPNAME}"
+    CreateDirectory "$SMPROGRAMS\${APPNAME}"
     CreateShortcut "$SMPROGRAMS\${APPNAME}\$R1.lnk" $R0
     ## TODO (currently the start menu entry is in admin space)
     #UAC::StackPush "$SMPROGRAMS\$StartMenuGroup\$R1.lnk"
@@ -322,9 +322,9 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 		    SectionIn 1 3
 			!insertmacro OpenUninstallLog
 			SetOverwrite on
-			CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\"
-			SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\"
-			!insertmacro InstallFolder "${THIRDPARTY_ROOT}\pwiz-bin\*.*" ""
+			CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+			SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
+      !insertmacro InstallFolder "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\pwiz-bin\*.*" ".git\"
 
 			## download .NET 3.5 and 4.0 (required by pwiz)
 			MessageBox MB_YESNO "Proteowizard requires both .NET 3.5 SP1 and .NET 4.0 installed. The installer will now download 'Microsoft .NET 3.5 SP1'. \
@@ -385,48 +385,19 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			
 			!insertmacro CloseUninstallLog
 		SectionEnd
-    
-    Section "Searchengines" SEC_Searchengines
-			SectionIn 1 3
 
-      
       ## Install everything platform specific
-      FindFirst $0 $1 "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\*.*"
-      loop:
-      StrCmp $1 "" done
-      ${If} ${FileExists} "$1\*.*"
-        !insertmacro OpenUninstallLog
-        SetOverwrite on
-        CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
-        SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
-        !insertmacro InstallFolder "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\$1\*.*" ""
-        !insertmacro CloseUninstallLog
-      ${EndIf}
-      FindNext $0 $1
-      Goto loop
-      done:
-      FindClose $0
+      !tempfile filelist
+      !system 'FOR /D %A IN ("${THIRDPARTYDIR}\Windows\${PLATFORM}bit\*") DO @( IF NOT "%~nA" == "pwiz-bin" ((echo Section "%~nA" & echo SectionIn 1 3 & echo !insertmacro OpenUninstallLog & echo SetOverwrite on & echo CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo !insertmacro InstallFolder "%~A\*.*" ".git\" & echo Var /GLOBAL %~nAInstalled & echo StrCpy $%~nAInstalled "1" & echo !insertmacro CloseUninstallLog & echo SectionEnd) >> "${filelist}"))'
+      !include "${filelist}"
+      !delfile "${filelist}"
       
       ## Install everything platform independent
-      FindFirst $0 $1 "${THIRDPARTYDIR}\All\*.*"
-      loop:
-      StrCmp $1 "" done
-      ${If} ${FileExists} "$1\*.*"
-        !insertmacro OpenUninstallLog
-        SetOverwrite on
-        CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
-        SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
-        !insertmacro InstallFolder "${THIRDPARTYDIR}\All\$1\*.*" ""
-        !insertmacro CloseUninstallLog
-      ${EndIf}
-      FindNext $0 $1
-      Goto loop
-      done:
-      FindClose $0
-      
-      StrCpy $ThirdpartyInstalled "1"
-      !insertmacro CloseUninstallLog
-    SectionEnd
+      !tempfile filelistindep
+      !system 'FOR /D %A IN ("${THIRDPARTYDIR}\All\*") DO @( (echo Section "%~nA" & echo SectionIn 1 3 & echo !insertmacro OpenUninstallLog & echo SetOverwrite on & echo CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo !insertmacro InstallFolder "%~A\*.*" ".git\" & echo Var /GLOBAL %~nAInstalled & echo StrCpy $%~nAInstalled "1" & echo !insertmacro CloseUninstallLog & echo SectionEnd) >> "${filelistindep}")'
+      !include "${filelistindep}"
+      !delfile "${filelistindep}"
+
 	!endif
 	
 
@@ -450,8 +421,6 @@ Section "-License" SEC_License
 SectionEnd
 
 Function CreateShortcuts
-    #StrCpy ${APPNAME} $9 ;stupid sync
-
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     
 		## warning: create shortcuts only AFTER installing files, OR renew SetOutPath
@@ -474,7 +443,6 @@ FunctionEnd
 
 
 Section "-Create_StartMenu" SEC_StartMenuCreate
-  StrCpy $9 ${SMSUBDIR} ;this is stupid as hell, we need correct ${SMSUBDIR} in the outer process, this is the only way (plugins cannot enum "custom" var's AFAIK)
   GetFunctionAddress $0 CreateShortcuts
   UAC::ExecCodeSegment $0
 SectionEnd
@@ -509,7 +477,7 @@ Section "-PathInst" SEC_PathRegister
     # OpenMS binary path
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\bin"
     IfErrors 0 +2
-			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to $PATH environment. Add manually if required. See 'details' for details."
+			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to PATH environment. Add manually if required. See 'details' for details."
 	
     # Third Party library paths
     FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
@@ -518,7 +486,7 @@ Section "-PathInst" SEC_PathRegister
     ${If} ${FileExists} "$1\*.*"
       ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
       IfErrors 0 +2
-        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\$1' to $PATH environment. Add manually if required. See 'details' for details."
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\$1' to PATH environment. Add manually if required. See 'details' for details."
     ${EndIf}
     FindNext $0 $1
     Goto loop
@@ -773,7 +741,7 @@ Section "Uninstall"
     
     RmDir /REBOOTOK $INSTDIR
 
-    ## delete start menu entries (via user process to find the correct $SMPrograms directory)
+    ## delete start menu entries (via user process to find the correct $SMPROGRAMS directory)
     GetFunctionAddress $0 un.clearStartMenu
     UAC::ExecCodeSegment $0
 
@@ -782,7 +750,7 @@ SectionEnd
 
 Function un.clearStartMenu
    # delete Startmenu-Entry
-   RmDir /r /REBOOTOK $SMPrograms\${APPNAME}
+   RmDir /r /REBOOTOK $SMPROGRAMS\${APPNAME}
 FunctionEnd
 
 # Installer functions
@@ -814,13 +782,4 @@ UAC_Success:
     MessageBox mb_iconstop "This installer requires administrative rights, try again"
     goto UAC_Elevate 
 
-FunctionEnd
- 
- 
-Function un.OnInstFailed
-   UAC::Unload ;Must call unload!
-FunctionEnd
- 
-Function un.OnInstSuccess
-   UAC::Unload ;Must call unload!
 FunctionEnd
