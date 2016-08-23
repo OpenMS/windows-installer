@@ -324,7 +324,7 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			SetOverwrite on
 			CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
 			SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\pwiz-bin"
-      !insertmacro InstallFolder "${THIRDPARTYDIR}\Windows\${PLATFORM}bit\pwiz-bin\*.*" ".git\"
+      !insertmacro InstallFolder "${THIRDPARTYDIR}\pwiz-bin\*.*" ".git\"
 
 			## download .NET 3.5 and 4.0 (required by pwiz)
 			MessageBox MB_YESNO "Proteowizard requires both .NET 3.5 SP1 and .NET 4.0 installed. The installer will now download 'Microsoft .NET 3.5 SP1'. \
@@ -386,17 +386,11 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			!insertmacro CloseUninstallLog
 		SectionEnd
 
-      ## Install everything platform specific
+      ## Install everything in the given (flattened) THIRDPARTY folder.
       !tempfile filelist
-      !system 'FOR /D %A IN ("${THIRDPARTYDIR}\Windows\${PLATFORM}bit\*") DO @( IF NOT "%~nA" == "pwiz-bin" ((echo Section "%~nA" & echo SectionIn 1 3 & echo !insertmacro OpenUninstallLog & echo SetOverwrite on & echo CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo !insertmacro InstallFolder "%~A\*.*" ".git\" & echo Var /GLOBAL %~nAInstalled & echo StrCpy $%~nAInstalled "1" & echo !insertmacro CloseUninstallLog & echo SectionEnd) >> "${filelist}"))'
+      !system 'FOR /D %A IN ("${THIRDPARTYDIR}\*") DO @( IF NOT "%~nA" == "pwiz-bin" ((echo Section "%~nA" & echo SectionIn 1 3 & echo !insertmacro OpenUninstallLog & echo SetOverwrite on & echo CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo !insertmacro InstallFolder "%~A\*.*" ".git\" & echo Var /GLOBAL %~nAInstalled & echo StrCpy $%~nAInstalled "1" & echo !insertmacro CloseUninstallLog & echo SectionEnd) >> "${filelist}"))'
       !include "${filelist}"
       !delfile "${filelist}"
-      
-      ## Install everything platform independent
-      !tempfile filelistindep
-      !system 'FOR /D %A IN ("${THIRDPARTYDIR}\All\*") DO @( (echo Section "%~nA" & echo SectionIn 1 3 & echo !insertmacro OpenUninstallLog & echo SetOverwrite on & echo CreateDirectory "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo SetOutPath "$INSTDIR\share\OpenMS\THIRDPARTY\%~nA" & echo !insertmacro InstallFolder "%~A\*.*" ".git\" & echo Var /GLOBAL %~nAInstalled & echo StrCpy $%~nAInstalled "1" & echo !insertmacro CloseUninstallLog & echo SectionEnd) >> "${filelistindep}")'
-      !include "${filelistindep}"
-      !delfile "${filelistindep}"
 
 	!endif
 	
