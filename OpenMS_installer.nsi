@@ -41,7 +41,7 @@ Name "OpenMS"
 !endif
 
 # pwiz needs alternative VS runtime libraries
-!define VS_PWIZ_REDISTRIBUTABLE_EXE "vcredist2010_x86.exe"
+!define VS_PWIZ_REDISTRIBUTABLE_EXE "vcredist2010_x86_sp1.exe"
 
 !ifndef PLATFORM
 !define PLATFORM 32
