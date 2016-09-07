@@ -50,8 +50,10 @@ Name "OpenMS"
 # additional pwiz redistributables
 !if ${PLATFORM} == 32
   !define VS_PWIZ_ADD1_REDISTRIBUTABLE_EXE "vcredist2012_x86_upd4.exe"
+  !define VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE "vcredist2013_x86_upd2.exe"
 !else
   !define VS_PWIZ_ADD1_REDISTRIBUTABLE_EXE "vcredist2012_x64_upd4.exe"
+  !define VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE "vcredist2013_x64_upd2.exe"
 !endif
 
 !ifndef THIRDPARTYDIR
@@ -397,6 +399,14 @@ SectionGroup "ThirdParty" SEC_ThirdParty
 			MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_PWIZ_ADD1_REDISTRIBUTABLE_EXE}' failed! Proteowizard will not work unless this package is installed! The package is located at '$TEMP\${VS_PWIZ_ADD1_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
 
 			vs_pwiz_add1_install_success:
+
+                        !insertmacro InstallFile  ${VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE}
+			ClearErrors
+			ExecWait '$TEMP\${VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE} /q' $0
+			StrCmp $0 0 vs_pwiz_add2_install_success
+			MessageBox MB_OK "The installation of the Visual Studio redistributable package '${VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE}' failed! Proteowizard will not work unless this package is installed! The package is located at '$TEMP\${VS_PWIZ_ADD2_REDISTRIBUTABLE_EXE}'. Try to execute it as administrator - there will likely be an error which you can blame Microsoft for. If you cannot fix it contact the OpenMS developers!"
+
+			vs_pwiz_add2_install_success:
 			
 			!insertmacro CloseUninstallLog
 		SectionEnd
