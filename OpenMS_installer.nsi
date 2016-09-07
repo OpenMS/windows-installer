@@ -165,7 +165,7 @@ LangString ^UninstallLink ${LANG_FRENCH} "Uninstall $(^Name)"
 # from http://stackoverflow.com/questions/8424172/nsis-display-license-with-a-monospace-font
 Function licpageshow
 FindWindow $0 "#32770" "" $HWNDPARENT
-CreateFont $1 "Lucida Sans Typewriter" "8"
+CreateFont $1 "Consolas" "8"
 GetDlgItem $0 $0 1000
 SendMessage $0 ${WM_SETFONT} $1 1
 FunctionEnd
