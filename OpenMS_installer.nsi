@@ -142,6 +142,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW licpageshow
 !insertmacro MUI_PAGE_LICENSE ${OPENMSDIRSRC}\License.txt
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
@@ -160,6 +161,16 @@ Var StartMenuGroup
 LangString ^UninstallLink ${LANG_GERMAN} "Uninstall $(^Name)"
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
 LangString ^UninstallLink ${LANG_FRENCH} "Uninstall $(^Name)"
+
+# Custom MUI Function to set font of license display page
+# to a mono spaced one.
+# from http://stackoverflow.com/questions/8424172/nsis-display-license-with-a-monospace-font
+Function licpageshow
+FindWindow $0 "#32770" "" $HWNDPARENT
+CreateFont $1 "Consolas" "8"
+GetDlgItem $0 $0 1000
+SendMessage $0 ${WM_SETFONT} $1 1
+FunctionEnd
 
 
 # predefined installation modes
