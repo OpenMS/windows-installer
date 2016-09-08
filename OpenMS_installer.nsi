@@ -510,7 +510,7 @@ Section "-PathInst" SEC_PathRegister
 			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to PATH environment. Add manually if required. See 'details' for details."
 	
     # Third Party library paths
-    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\*.*"
     loop:
     StrCmp $1 "" done
     ${If} ${FileExists} "$1\*.*"
