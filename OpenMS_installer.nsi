@@ -88,7 +88,9 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Included files
 
-!include MUI2.nsh
+# MUI2 somehow crashes with NSIS3.0 release/stable. Switched to UMUI that seems better supported and has legacy option.
+#!include MUI2.nsh
+!include MUIEx.nsh
 !include Sections.nsh
 !include Library.nsh
 !include FileFunc.nsh
@@ -102,9 +104,8 @@ RequestExecutionLevel user    /* RequestExecutionLevel REQUIRED! */
 
 # Reserved Files
 !insertmacro MUI_RESERVEFILE_LANGDLL
-# Modify the next line to adapt to the plugin for other NSIS versions (currently 3.0b2)
-# NSIS 2.x does not have the subfolders x86-unicode or x86-ansi, so remove them.
-# The next line was tested on 3.0b1 and 3.0b2 and does not seem to work in 3.0b3
+# Modify the next line to adapt to the plugin for other NSIS versions (currently 3.0 release)
+# e.g. NSIS 2.x does not have the subfolders x86-unicode or x86-ansi, so remove them.
 ReserveFile "${NSISDIR}\Plugins\x86-unicode\advsplash.dll"
 
 ;--------------------------------
@@ -510,18 +511,42 @@ Section "-PathInst" SEC_PathRegister
 			MessageBox MB_OK "Unable to add '$INSTDIR\bin' to PATH environment. Add manually if required. See 'details' for details."
 	
     # Third Party library paths
-    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\*.*"
-    loop:
-    StrCmp $1 "" done
-    ${If} ${FileExists} "$1\*.*"
-      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\Fido\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\Fido"
       IfErrors 0 +2
-        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\$1' to PATH environment. Add manually if required. See 'details' for details."
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\Fido' to PATH environment. Add manually if required. See 'details' for details."
     ${EndIf}
-    FindNext $0 $1
-    Goto loop
-    done:
-    FindClose $0
+
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\MyriMatch\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\MyriMatch"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\MyriMatch' to PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}
+
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\XTandem\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\XTandem"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\XTandem' to PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}
+
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\MSGFPlus\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\MSGFPlus"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\MSGFPlus' to PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}
+
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\OMSSA' to PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}
+
+    ${If} ${FileExists} "$INSTDIR\share\OpenMS\THIRDPARTY\LuciPHOr2\*.*"
+      ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\LuciPHOr2"
+      IfErrors 0 +2
+        MessageBox MB_OK "Unable to add '$INSTDIR\share\OpenMS\THIRDPARTY\LuciPHOr2' to PATH environment. Add manually if required. See 'details' for details."
+    ${EndIf}    
 
     #create OPENMS_DATA_PATH environment variable (for shared xml files etc)
     ; set variable
@@ -726,12 +751,15 @@ Section "Uninstall"
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\bin"
     
     # Third Party library paths
-    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
+    FindFirst $0 $1 "$INSTDIR\share\OpenMS\THIRDPARTY\*.*"
     loop:
     StrCmp $1 "" done
+    StrCmp $1 "." skip
+    StrCmp $1 ".." skip
     ${If} ${FileExists} "$1\*.*"
       ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\share\OpenMS\THIRDPARTY\$1"
     ${EndIf}
+    skip:
     FindNext $0 $1
     Goto loop
     done:
