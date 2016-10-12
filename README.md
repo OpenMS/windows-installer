@@ -7,10 +7,10 @@ Additional required software:
 -------------
 
 - NSIS (NullSoft Installer System)
-  - has been tested up to 3.0b2 from http://nsis.sourceforge.net. It seems to stop working in 3.0b3.
-  - to work with NSIS 2.x, you need to remove a subfolder on line 91 in the OpenMS_installer.nsi
-  - you might need to copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
-    build into your NSIS install directory (this should overwrite makensis.exe and Stubs)
+  - in its current version the scripts are written for NSIS 3.0 from http://nsis.sourceforge.net. For 3.0 we upgraded to a newer, better maintained UI plugin (https://github.com/SuperPat45/UltraModernUI) but with legacy design. Please install/copy it, too, before you proceed.
+  - to work with NSIS 2.x, you need to remove a subfolder on line 91 in the OpenMS_installer.nsi and use the old UI plugin but we suggest the sole usage of NSIS 3.0 now.
+  - you should also copy the content of the 8k string support from http://nsis.sourceforge.net/Special_Builds (Download large strings build)
+    build into your NSIS install directory (this should overwrite makensis.exe and Stubs). It removes problems during the addition of the many thirdparty paths on a user's machine during installation. (There are no problems during compilation)
 
 
 TODO before running OpenMS_installer.nsi 
