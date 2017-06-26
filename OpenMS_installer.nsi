@@ -271,6 +271,7 @@ Section "OpenMS Library" SEC_Lib
 
     # install file (with logging)
     !insertmacro InstallFile "${CONTRIBDIR}\lib\xerces-c_3_1.dll"
+    !insertmacro InstallFile "${CONTRIBDIR}\lib\sqlite3.dll"
     
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS.dll"
     !insertmacro InstallFile "${OPENMSDIR}\bin\Release\OpenMS_GUI.dll"
